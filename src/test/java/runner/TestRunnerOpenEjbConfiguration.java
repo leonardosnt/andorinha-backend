@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Set;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TestRunnerOpenEjbConfiguration {
 
@@ -44,7 +44,7 @@ public class TestRunnerOpenEjbConfiguration {
 
         logger.debug("Datasources carregados -> criando ALIAS JDNI");
 
-        // para cada datasource criado, é necessário criar um "alias" JNDI,
+        // para cada datasource criado, ï¿½ necessï¿½rio criar um "alias" JNDI,
         // pois o Open EJB registra os datasources em java:/openejb/Resources
         // (diferente do Wildfly)
         Set<Object> keys = p.keySet();
@@ -61,14 +61,14 @@ public class TestRunnerOpenEjbConfiguration {
                     if (testQuery == null) {
                         logger.debug(String.format("Registrando validationQuery para [java:%s]", dsKey));
 
-                        // insere num properties novo, pois não é possivel
+                        // insere num properties novo, pois nï¿½o ï¿½ possivel
                         // adicionar no mesmo property enquanto itera as KEYS
                         newProperties.setProperty(dsKey + ".validationQuery", "SELECT 1 FROM dual");
                     }
                 }
 
                 boolean isH2 = p.getProperty(dsKey + ".JdbcDriver", "false").equalsIgnoreCase("h2");
-                // verifica se é H2 (e insere o restante dos dados
+                // verifica se ï¿½ H2 (e insere o restante dos dados
                 // automagicamente)
                 if (isH2) {
                     newProperties.setProperty(dsKey + ".JdbcDriver", "org.h2.jdbcx.JdbcDataSource");
@@ -127,7 +127,7 @@ public class TestRunnerOpenEjbConfiguration {
     }
 
     private static void loadProperties(String file, java.util.Properties p) {
-        try (InputStream in = TestRunner.class.getClassLoader().getResourceAsStream(file)) {
+        try (InputStream in = AndorinhaTestRunner.class.getClassLoader().getResourceAsStream(file)) {
             java.util.Properties ds = new java.util.Properties();
             ds.load(in);
             p.putAll(ds);
