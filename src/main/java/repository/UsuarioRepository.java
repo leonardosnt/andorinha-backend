@@ -33,8 +33,15 @@ public class UsuarioRepository extends AbstractCrudRepository {
 		}
 	}
 	
-	public void atualizar(Usuario usuario) {
-		
+	public void atualizar(Usuario usuario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		try (Connection c = this.abrirConexao()) {
+			PreparedStatement ps = c.prepareStatement("update usuario set nome = ? where id = ?");
+			ps.setString(1, usuario.getNome());
+			ps.setInt(2, usuario.getId());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao inserir usuário", e);
+		}
 	}
 	
 	public void remover(int id) {
