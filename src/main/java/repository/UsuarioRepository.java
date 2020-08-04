@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Usuario;
@@ -80,9 +81,26 @@ public class UsuarioRepository extends AbstractCrudRepository {
 		}
 	}
 	
-	public List<Usuario> listarTodos() {
+	public List<Usuario> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		List<Usuario> resultado = new ArrayList<>();
 		
-		return null;
+		try (Connection c = this.abrirConexao()) {
+			PreparedStatement ps = c.prepareStatement("select id, nome from usuario");
+
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Usuario user = new Usuario();
+				user.setId(rs.getInt("id"));
+				user.setNome(rs.getString("nome"));
+				resultado.add(user);
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar todos os usuários", e);
+		}
+
+		return resultado;
 	}
 	
 	

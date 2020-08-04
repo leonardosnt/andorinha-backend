@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -104,6 +106,25 @@ public class TestUsuarioRepository {
 
 		Usuario usuarioRemovido = this.usuarioRepository.consultar(novoUsuario.getId());
 		assertThat(usuarioRemovido).isNull();
+	}
+
+	@Test
+	public void testa_listar_todos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		int numUsuariosTeste = 3;
+		List<Usuario> usuariosEsperados = new ArrayList<>();
+
+		for (int i = 0; i < numUsuariosTeste; i++) {
+			Usuario novoUsuario = new Usuario();
+			novoUsuario.setNome("Usuario Teste #" + i);
+			this.usuarioRepository.inserir(novoUsuario);
+
+			usuariosEsperados.add(novoUsuario);
+		}
+
+		List<Usuario> usuarios = this.usuarioRepository.listarTodos();
+
+		assertThat(usuarios.size()).isEqualTo(numUsuariosTeste);
+		assertThat(usuarios).containsExactlyInAnyOrderElementsOf(usuariosEsperados);
 	}
 
 }
