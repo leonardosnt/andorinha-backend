@@ -62,4 +62,18 @@ public class TestUsuarioRepository {
 		assertThat(alterado.getNome()).isEqualTo("Nome Alterado");
 	}
 
+	@Test
+	public void testa_remover_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Usuario novoUsuario = new Usuario();
+		novoUsuario.setNome("Usuario Teste");
+		this.usuarioRepository.inserir(novoUsuario);
+
+		assertThat(novoUsuario.getId()).isGreaterThan(0);
+
+		this.usuarioRepository.remover(novoUsuario.getId());
+
+		Usuario usuarioRemovido = this.usuarioRepository.consultar(novoUsuario.getId());
+		assertThat(usuarioRemovido).isNull();
+	}
+
 }
