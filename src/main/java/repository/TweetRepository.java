@@ -50,8 +50,14 @@ public class TweetRepository extends AbstractCrudRepository {
 		}
 	}
 
-	public void remover(int id) {
-
+	public void remover(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		try (Connection c = this.abrirConexao()) {
+			PreparedStatement ps = c.prepareStatement("delete from tweet where id = ?");
+			ps.setInt(1, id);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao remover o tweet", e);
+		}
 	}
 
 	public Tweet consultar(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {

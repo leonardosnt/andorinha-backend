@@ -75,6 +75,18 @@ public class TweetRepositoryTest {
 		assertThat(tweetAtualizado).isEqualTo(tweetInserido);
 	}
 
+	@Test
+	public void testa_remover_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Tweet tweetInserido = inserirTweetDeTeste();
+
+		assertThat(tweetInserido.getId()).isGreaterThan(0);
+
+		this.tweetRepository.remover(tweetInserido.getId());
+
+		Tweet tweetRemovido = this.tweetRepository.consultar(tweetInserido.getId());
+		assertThat(tweetRemovido).isNull();
+	}
+
 	private Tweet inserirTweetDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		// Primeiro criamos e inserimos o autor do tweet
 		Usuario usuario = new Usuario();
