@@ -8,16 +8,11 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import model.Tweet;
+import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
 
 public class TweetRepository extends AbstractCrudRepository {
-
-	private UsuarioRepository usuarioRepostory;
-
-	public TweetRepository(UsuarioRepository usuarioRepostory) {
-		this.usuarioRepostory = usuarioRepostory;
-	}
 
 	public void inserir(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		try (Connection c = this.abrirConexao()) {
@@ -62,7 +57,11 @@ public class TweetRepository extends AbstractCrudRepository {
 
 	public Tweet consultar(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		try (Connection c = this.abrirConexao()) {
-			PreparedStatement ps = c.prepareStatement("select conteudo, data_criacao, id_usuario from tweet where id = ?");
+			String sql = "SELECT conteudo, data_criacao, id_usuario, nome FROM tweet"
+					+ " JOIN usuario ON usuario.id = id_usuario"
+					+ " WHERE tweet.id = ?";
+
+			PreparedStatement ps = c.prepareStatement(sql);
 			ps.setInt(1, id);
 
 			Tweet tweet = null;
@@ -72,7 +71,12 @@ public class TweetRepository extends AbstractCrudRepository {
 				tweet.setId(id);
 				tweet.setConteudo(rs.getString("conteudo"));
 				tweet.setDataCriacao(rs.getTimestamp("data_criacao").toInstant());
-				tweet.setUsuario(this.usuarioRepostory.consultar(rs.getInt("id_usuario")));
+
+				Usuario usuario = new Usuario();
+				usuario.setId(rs.getInt("id_usuario"));
+				usuario.setNome(rs.getString("nome"));
+
+				tweet.setUsuario(usuario);
 			}
 			ps.close();
 			rs.close();

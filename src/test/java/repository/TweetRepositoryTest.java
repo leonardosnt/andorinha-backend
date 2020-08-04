@@ -29,7 +29,7 @@ public class TweetRepositoryTest {
 	@Before
 	public void setUp() throws SQLException {
 		this.usuarioRepository = new UsuarioRepository();
-		this.tweetRepository = new TweetRepository(usuarioRepository);
+		this.tweetRepository = new TweetRepository();
 
 		this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/andorinha_test", "postgres", "postgres");
 	}
