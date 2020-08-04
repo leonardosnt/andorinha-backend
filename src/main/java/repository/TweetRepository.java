@@ -20,7 +20,7 @@ public class TweetRepository extends AbstractCrudRepository {
 			PreparedStatement ps = c.prepareStatement("insert into tweet (id, conteudo, data_criacao, id_usuario) values (?, ?, ?, ?)");
 			ps.setInt(1, tweet.getId());
 			ps.setString(2, tweet.getConteudo());
-			ps.setTimestamp(3, Timestamp.from(tweet.getData()));
+			ps.setTimestamp(3, Timestamp.from(tweet.getDataCriacao()));
 			ps.setInt(4, tweet.getUsuario().getId());
 			ps.execute();
 			ps.close();
@@ -33,7 +33,7 @@ public class TweetRepository extends AbstractCrudRepository {
 		try (Connection c = this.abrirConexao()) {
 			PreparedStatement ps = c.prepareStatement("update tweet set conteudo = ?, data_criacao = ?, id_usuario = ? where id = ?");
 			ps.setString(1, tweet.getConteudo());
-			ps.setTimestamp(2, Timestamp.from(tweet.getData()));
+			ps.setTimestamp(2, Timestamp.from(tweet.getDataCriacao()));
 			ps.setInt(3, tweet.getUsuario().getId());
 			ps.setInt(4, tweet.getId());
 			ps.execute();

@@ -21,7 +21,7 @@ public class Tweet {
 	public void setConteudo(String conteudo) {
 		this.conteudo = conteudo;
 	}
-	public Instant getData() {
+	public Instant getDataCriacao() {
 		return dataCriacao;
 	}
 	public void setDataCriacao(Instant dataCriacao) {
