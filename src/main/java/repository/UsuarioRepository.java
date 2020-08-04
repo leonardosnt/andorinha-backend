@@ -41,7 +41,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 			ps.setInt(2, usuario.getId());
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao inserir usuário", e);
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar usuário", e);
 		}
 	}
 	
@@ -51,7 +51,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 			ps.setInt(1, id);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao inserir usuário", e);
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao remover usuário", e);
 		}
 	}
 	
