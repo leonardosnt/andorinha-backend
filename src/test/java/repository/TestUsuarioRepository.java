@@ -2,6 +2,12 @@ package repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,10 +21,25 @@ import runner.AndorinhaTestRunner;
 public class TestUsuarioRepository {
 
 	private UsuarioRepository usuarioRepository;
+	private Connection connection;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws SQLException {
 		this.usuarioRepository = new UsuarioRepository();
+
+		this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/andorinha_test", "postgres", "postgres");
+	}
+
+	@After
+	public void tearDown() throws SQLException {
+		// Reseta a tabela usuário e a sequência, após cada teste, fazendo com que os testes sejam determinísticos.
+		try (PreparedStatement deletePs = connection.prepareStatement("delete from usuario");
+			 PreparedStatement resetPs = connection.prepareStatement("alter sequence seq_usuario restart")) {
+			deletePs.executeUpdate();
+			resetPs.executeUpdate();
+		} finally {
+			this.connection.close();
+		}
 	}
 
 	@Test
@@ -38,26 +59,35 @@ public class TestUsuarioRepository {
 
 	@Test
 	public void testa_consultar_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		int idConsulta = 6;
-		Usuario user = this.usuarioRepository.consultar(idConsulta);
+		Usuario novoUsuario = new Usuario();
+		novoUsuario.setNome("Usuario do Teste de Unidade");
+		this.usuarioRepository.inserir(novoUsuario);
 
-		assertThat( user ).isNotNull();
-		assertThat( user.getNome() ).isEqualTo("Usuario do Teste de Unidade");
-		assertThat( user.getId() ).isEqualTo(idConsulta);
+		assertThat( novoUsuario.getId() ).isGreaterThan( 0 );
+
+		Usuario usuarioConsultado = this.usuarioRepository.consultar(novoUsuario.getId());
+
+		assertThat( usuarioConsultado ).isNotNull();
+		assertThat( usuarioConsultado.getNome() ).isEqualTo("Usuario do Teste de Unidade");
+		assertThat( usuarioConsultado.getId() ).isEqualTo(novoUsuario.getId());
 	}
 
 	@Test
 	public void testa_atualizar_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		int idConsulta = 5;
-		Usuario usuario = this.usuarioRepository.consultar(idConsulta);
+		// Insere um novo usuário
+		Usuario novoUsuario = new Usuario();
+		novoUsuario.setNome("Usuario do Teste de Unidade");
+		this.usuarioRepository.inserir(novoUsuario);
 
-		assertThat(usuario).isNotNull();
+		assertThat( novoUsuario.getId() ).isGreaterThan( 0 );
 
-		usuario.setNome("Nome Alterado");
+		// Atualiza o nome do usuário inserido
+		novoUsuario.setNome("Nome Alterado");
 
-		this.usuarioRepository.atualizar(usuario);
+		this.usuarioRepository.atualizar(novoUsuario);
 
-		Usuario alterado = this.usuarioRepository.consultar(idConsulta);
+		// Verifica se a alteração foi bem sucedida
+		Usuario alterado = this.usuarioRepository.consultar(novoUsuario.getId());
 
 		assertThat(alterado.getNome()).isEqualTo("Nome Alterado");
 	}
