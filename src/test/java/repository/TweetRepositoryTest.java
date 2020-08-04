@@ -49,26 +49,23 @@ public class TweetRepositoryTest {
 
 	@Test
 	public void testa_inserir_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		// Primeiro criamos e inserimos o autor do tweet
-		Usuario usuario = new Usuario();
-		usuario.setNome("João");
-		this.usuarioRepository.inserir(usuario);
+		Tweet tweet = inserirTweetDeTeste();
 
-		assertThat(usuario.getId()).isGreaterThan(0);
-
-		// Depois criamos e inserimos o Tweet
-		Tweet tweet = new Tweet();
-		tweet.setConteudo("Hello World!");
-		tweet.setDataCriacao(Instant.now());
-		tweet.setUsuario(usuario);
-
-		this.tweetRepository.inserir(tweet);
 		assertThat(tweet.getId()).isGreaterThan(0);
 	}
 
 	@Test
 	public void testa_atualizar_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		// TODO: código duplicado do teste de cima.
+		Tweet tweet = inserirTweetDeTeste();
+
+		tweet.setConteudo("Olá, mundo!");
+		this.tweetRepository.atualizar(tweet);
+
+		// TODO: é necessário implementar o método consultar para usar aqui!
+		// TODO: consultar o tweet atualizado e verificar se os campos foram atualizados.
+	}
+
+	private Tweet inserirTweetDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		// Primeiro criamos e inserimos o autor do tweet
 		Usuario usuario = new Usuario();
 		usuario.setNome("João");
@@ -81,16 +78,9 @@ public class TweetRepositoryTest {
 		tweet.setConteudo("Hello World!");
 		tweet.setDataCriacao(Instant.now());
 		tweet.setUsuario(usuario);
-
 		this.tweetRepository.inserir(tweet);
-		assertThat(tweet.getId()).isGreaterThan(0);
 
-		// Atualiza o tweet inserido
-		tweet.setConteudo("Olá, mundo!");
-		this.tweetRepository.atualizar(tweet);
-
-		// TODO: é necessário implementar o método consultar para usar aqui!
-		// TODO: consultar o tweet atualizado e verificar se os campos foram atualizados.
+		return tweet;
 	}
 
 }
