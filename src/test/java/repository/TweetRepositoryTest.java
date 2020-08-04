@@ -87,15 +87,17 @@ public class TweetRepositoryTest {
 		assertThat(tweetRemovido).isNull();
 	}
 
-	private Tweet inserirTweetDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		// Primeiro criamos e inserimos o autor do tweet
+	private Usuario insereUsuarioDeTeste(String nome) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		Usuario usuario = new Usuario();
-		usuario.setNome("João");
+		usuario.setNome(nome);
 		this.usuarioRepository.inserir(usuario);
 
 		assertThat(usuario.getId()).isGreaterThan(0);
 
-		// Depois criamos e inserimos o Tweet
+		return usuario;
+	}
+
+	private Tweet inserirTweetDeTeste(Usuario usuario, String conteudo) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		Tweet tweet = new Tweet();
 		tweet.setConteudo("Hello World!");
 		tweet.setDataCriacao(Instant.now());
@@ -103,6 +105,11 @@ public class TweetRepositoryTest {
 		this.tweetRepository.inserir(tweet);
 
 		return tweet;
+	}
+
+	private Tweet inserirTweetDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Usuario usuario = insereUsuarioDeTeste("Usuário Teste");
+		return inserirTweetDeTeste(usuario, "Conteúdo teste");
 	}
 
 }
