@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Tweet;
@@ -87,7 +88,36 @@ public class TweetRepository extends AbstractCrudRepository {
 		}
 	}
 
-	public List<Tweet> listarTodos() {
-		return null;
+	public List<Tweet> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		List<Tweet> tweets = new ArrayList<Tweet>();
+
+		try (Connection c = this.abrirConexao()) {
+			String sql = "SELECT tweet.id as id_tweet, conteudo, data_criacao, id_usuario, nome FROM tweet"
+					+ " JOIN usuario ON usuario.id = id_usuario";
+
+			PreparedStatement ps = c.prepareStatement(sql);
+
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Tweet tweet = new Tweet();
+				tweet.setId(rs.getInt("id_tweet"));
+				tweet.setConteudo(rs.getString("conteudo"));
+				tweet.setDataCriacao(rs.getTimestamp("data_criacao").toInstant());
+
+				Usuario usuario = new Usuario();
+				usuario.setId(rs.getInt("id_usuario"));
+				usuario.setNome(rs.getString("nome"));
+
+				tweet.setUsuario(usuario);
+
+				tweets.add(tweet);
+			}
+			ps.close();
+			rs.close();
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar o tweet", e);
+		}
+
+		return tweets;
 	}
 }

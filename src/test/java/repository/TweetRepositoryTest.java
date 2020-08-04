@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -85,6 +87,19 @@ public class TweetRepositoryTest {
 
 		Tweet tweetRemovido = this.tweetRepository.consultar(tweetInserido.getId());
 		assertThat(tweetRemovido).isNull();
+	}
+
+	@Test
+	public void testa_listar_todos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Usuario u0 = insereUsuarioDeTeste("Usuario 1");
+		Usuario u1 = insereUsuarioDeTeste("Usuario 2");
+
+		List<Tweet> tweetsEsperados = new ArrayList<>();
+		tweetsEsperados.add(inserirTweetDeTeste(u0, "Hello World"));
+		tweetsEsperados.add(inserirTweetDeTeste(u1, "Hello World"));
+
+		List<Tweet> todosTweets = this.tweetRepository.listarTodos();
+		assertThat(todosTweets).containsExactlyInAnyOrderElementsOf(tweetsEsperados);
 	}
 
 	private Usuario insereUsuarioDeTeste(String nome) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
