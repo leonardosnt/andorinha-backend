@@ -29,8 +29,18 @@ public class TweetRepository extends AbstractCrudRepository {
 		}
 	}
 
-	public void atualizar(Tweet tweet) {
-
+	public void atualizar(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		try (Connection c = this.abrirConexao()) {
+			PreparedStatement ps = c.prepareStatement("update tweet set conteudo = ?, data_criacao = ?, id_usuario = ? where id = ?");
+			ps.setString(1, tweet.getConteudo());
+			ps.setTimestamp(2, Timestamp.from(tweet.getData()));
+			ps.setInt(3, tweet.getUsuario().getId());
+			ps.setInt(4, tweet.getId());
+			ps.execute();
+			ps.close();
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar o tweet", e);
+		}
 	}
 
 	public void remover(int id) {
