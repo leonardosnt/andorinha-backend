@@ -29,7 +29,7 @@ public class TweetRepositoryTest {
 	@Before
 	public void setUp() throws SQLException {
 		this.usuarioRepository = new UsuarioRepository();
-		this.tweetRepository = new TweetRepository();
+		this.tweetRepository = new TweetRepository(usuarioRepository);
 
 		this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/andorinha_test", "postgres", "postgres");
 	}
@@ -55,14 +55,24 @@ public class TweetRepositoryTest {
 	}
 
 	@Test
+	public void testa_consultar_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Tweet tweetInserido = inserirTweetDeTeste();
+
+		Tweet tweetConsulta = this.tweetRepository.consultar(tweetInserido.getId());
+
+		assertThat(tweetConsulta).isNotNull();
+		assertThat(tweetConsulta).isEqualTo(tweetInserido);
+	}
+
+	@Test
 	public void testa_atualizar_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweet = inserirTweetDeTeste();
+		Tweet tweetInserido = inserirTweetDeTeste();
+		tweetInserido.setConteudo("Olá, mundo!");
 
-		tweet.setConteudo("Olá, mundo!");
-		this.tweetRepository.atualizar(tweet);
+		this.tweetRepository.atualizar(tweetInserido);
 
-		// TODO: é necessário implementar o método consultar para usar aqui!
-		// TODO: consultar o tweet atualizado e verificar se os campos foram atualizados.
+		Tweet tweetAtualizado = this.tweetRepository.consultar(tweetInserido.getId());
+		assertThat(tweetAtualizado).isEqualTo(tweetInserido);
 	}
 
 	private Tweet inserirTweetDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {

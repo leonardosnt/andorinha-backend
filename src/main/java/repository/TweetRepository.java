@@ -2,6 +2,7 @@ package repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -11,6 +12,12 @@ import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
 
 public class TweetRepository extends AbstractCrudRepository {
+
+	private UsuarioRepository usuarioRepostory;
+
+	public TweetRepository(UsuarioRepository usuarioRepostory) {
+		this.usuarioRepostory = usuarioRepostory;
+	}
 
 	public void inserir(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		try (Connection c = this.abrirConexao()) {
@@ -47,8 +54,27 @@ public class TweetRepository extends AbstractCrudRepository {
 
 	}
 
-	public Tweet consultar(int id) {
-		return null;
+	public Tweet consultar(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		try (Connection c = this.abrirConexao()) {
+			PreparedStatement ps = c.prepareStatement("select conteudo, data_criacao, id_usuario from tweet where id = ?");
+			ps.setInt(1, id);
+
+			Tweet tweet = null;
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				tweet = new Tweet();
+				tweet.setId(id);
+				tweet.setConteudo(rs.getString("conteudo"));
+				tweet.setDataCriacao(rs.getTimestamp("data_criacao").toInstant());
+				tweet.setUsuario(this.usuarioRepostory.consultar(rs.getInt("id_usuario")));
+			}
+			ps.close();
+			rs.close();
+
+			return tweet;
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar o tweet", e);
+		}
 	}
 
 	public List<Tweet> listarTodos() {
