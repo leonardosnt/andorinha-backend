@@ -16,10 +16,23 @@ CREATE TABLE tweet (
     id_usuario INTEGER,
 
     CONSTRAINT pk_tweet PRIMARY KEY (id),
-    CONSTRAINT fk_id_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id)
+    CONSTRAINT fk_tweet_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id)
+);
+
+CREATE TABLE comentario (
+    id INTEGER,
+    conteudo VARCHAR NOT NULL,
+    data_criacao TIMESTAMP NOT NULL,
+    id_usuario INTEGER,
+    id_tweet INTEGER,
+
+    CONSTRAINT pk_comentario PRIMARY KEY (id),
+    CONSTRAINT fk_comentario_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id),
+    CONSTRAINT fk_comentario_tweet FOREIGN KEY (id_tweet) REFERENCES tweet (id)
 );
 
 CREATE SEQUENCE seq_usuario START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE seq_tweet START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE seq_comentario START WITH 1 INCREMENT BY 1;
 
 COMMIT;
