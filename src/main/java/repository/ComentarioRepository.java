@@ -50,8 +50,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 
 	public void atualizar(Comentario comentario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		try (Connection c = this.abrirConexao()) {
-			String sql = "UPDATE comentario SET conteudo = ?, data_criacao = ?, id_tweet = ?, id_usuario = ?"
-					+ " WHERE id = ?";
+			String sql = "UPDATE comentario SET conteudo = ?, data_criacao = ?, id_tweet = ?, id_usuario = ? WHERE id = ?";
 			PreparedStatement ps = c.prepareStatement(sql);
 			ps.setString(1, comentario.getConteudo());
 			ps.setTimestamp(2, Timestamp.from(comentario.getDataCriacao()));
@@ -66,7 +65,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 
 	public void remover(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		try (Connection c = this.abrirConexao()) {
-			PreparedStatement ps = c.prepareStatement("delete from comentario where id = ?");
+			PreparedStatement ps = c.prepareStatement("DELETE FROM comentario WHERE id = ?");
 			ps.setInt(1, id);
 			ps.executeUpdate();
 		} catch (SQLException e) {
