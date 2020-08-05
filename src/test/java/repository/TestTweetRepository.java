@@ -22,7 +22,7 @@ import model.exceptions.ErroAoConsultarBaseException;
 import runner.AndorinhaTestRunner;
 
 @RunWith(AndorinhaTestRunner.class)
-public class TweetRepositoryTest {
+public class TestTweetRepository {
 
 	private TweetRepository tweetRepository;
 	private UsuarioRepository usuarioRepository;
