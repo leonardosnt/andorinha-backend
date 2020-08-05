@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -130,14 +132,28 @@ public class TestComentarioRepository {
 
 	@Test
 	public void testa_listar_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Tweet tweet1 = inserirTweetDeTeste();
+		Tweet tweet2 = inserirTweetDeTeste();
+
+		Usuario autor1 = inserirUsuarioDeTeste("Autor 1");
+		Usuario autor2 = inserirUsuarioDeTeste("Autor 2");
+
+		List<Comentario> esperados = new ArrayList<>();
+
+		esperados.add(inserirComentarioDeTeste(autor1, tweet1, "Teste comentário 1"));
+		esperados.add(inserirComentarioDeTeste(autor1, tweet2, "Teste comentário 2"));
+
+		esperados.add(inserirComentarioDeTeste(autor2, tweet1, "Teste comentário 3"));
+		esperados.add(inserirComentarioDeTeste(autor2, tweet2, "Teste comentário 4"));
+
+		List<Comentario> todos = this.comentarioRepository.listarTodos();
+
+		assertThat(todos).containsExactlyInAnyOrderElementsOf(esperados);
 	}
 
-	private Comentario inserirComentarioDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweet = inserirTweetDeTeste();
-		Usuario autor = inserirUsuarioDeTeste("Teste");
-
+	private Comentario inserirComentarioDeTeste(Usuario autor, Tweet tweet, String conteudo) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		Comentario comentario = new Comentario();
-		comentario.setConteudo("Teste");
+		comentario.setConteudo(conteudo);
 		comentario.setDataCriacao(Instant.now());
 		comentario.setUsuario(autor);
 		comentario.setTweet(tweet);
@@ -145,6 +161,12 @@ public class TestComentarioRepository {
 		this.comentarioRepository.inserir(comentario);
 
 		return comentario;
+	}
+
+	private Comentario inserirComentarioDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Tweet tweet = inserirTweetDeTeste();
+		Usuario autor = inserirUsuarioDeTeste("Teste");
+		return inserirComentarioDeTeste(autor, tweet, "Teste conteúdo");
 	}
 
 	// TODO: código duplicado do TestTweetRepository
