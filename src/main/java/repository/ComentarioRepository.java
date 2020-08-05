@@ -81,28 +81,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				comentario = new Comentario();
-				comentario.setId(rs.getInt("id"));
-				comentario.setConteudo(rs.getString("conteudo"));
-				comentario.setDataCriacao(rs.getTimestamp("data_criacao").toInstant());
-
-				Usuario usuario = new Usuario();
-				usuario.setId(rs.getInt("id_autor"));
-				usuario.setNome(rs.getString("nome_autor"));
-
-				comentario.setUsuario(usuario);
-
-				Tweet tweet = new Tweet();
-				tweet.setId(rs.getInt("id_tweet"));
-				tweet.setConteudo(rs.getString("conteudo_tweet"));
-				tweet.setDataCriacao(rs.getTimestamp("data_criacao_tweet").toInstant());
-
-				Usuario autorTweet = new Usuario();
-				autorTweet.setId(rs.getInt("id_autor_tweet"));
-				autorTweet.setNome(rs.getString("nome_autor_tweet"));
-				tweet.setUsuario(autorTweet);
-
-				comentario.setTweet(tweet);
+				comentario = fromResultSet(rs);
 			}
 			rs.close();
 			ps.close();
