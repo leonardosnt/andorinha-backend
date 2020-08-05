@@ -91,8 +91,8 @@ public class TweetRepositoryTest {
 
 	@Test
 	public void testa_listar_todos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario u0 = insereUsuarioDeTeste("Usuario 1");
-		Usuario u1 = insereUsuarioDeTeste("Usuario 2");
+		Usuario u0 = inserirUsuarioDeTeste("Usuario 1");
+		Usuario u1 = inserirUsuarioDeTeste("Usuario 2");
 
 		List<Tweet> tweetsEsperados = new ArrayList<>();
 		tweetsEsperados.add(inserirTweetDeTeste(u0, "Hello World"));
@@ -102,7 +102,7 @@ public class TweetRepositoryTest {
 		assertThat(todosTweets).containsExactlyInAnyOrderElementsOf(tweetsEsperados);
 	}
 
-	private Usuario insereUsuarioDeTeste(String nome) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	private Usuario inserirUsuarioDeTeste(String nome) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		Usuario usuario = new Usuario();
 		usuario.setNome(nome);
 		this.usuarioRepository.inserir(usuario);
@@ -123,7 +123,7 @@ public class TweetRepositoryTest {
 	}
 
 	private Tweet inserirTweetDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario usuario = insereUsuarioDeTeste("Usuário Teste");
+		Usuario usuario = inserirUsuarioDeTeste("Usuário Teste");
 		return inserirTweetDeTeste(usuario, "Conteúdo teste");
 	}
 
