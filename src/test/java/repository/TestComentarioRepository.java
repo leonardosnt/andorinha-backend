@@ -2,15 +2,11 @@ package repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +17,7 @@ import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
 import runner.AndorinhaTestRunner;
+import runner.DatabaseHelper;
 
 @RunWith(AndorinhaTestRunner.class)
 public class TestComentarioRepository {
@@ -28,30 +25,14 @@ public class TestComentarioRepository {
 	private TweetRepository tweetRepository;
 	private UsuarioRepository usuarioRepository;
 	private ComentarioRepository comentarioRepository;
-	private Connection connection;
 
 	@Before
 	public void setUp() throws SQLException {
+		DatabaseHelper.getInstance("andorinhaDS").executeSqlScript("sql/prepare-database.sql");
+
 		this.usuarioRepository = new UsuarioRepository();
 		this.tweetRepository = new TweetRepository();
 		this.comentarioRepository = new ComentarioRepository();
-
-		this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/andorinha_test", "postgres", "postgres");
-	}
-
-	@After
-	public void tearDown() throws SQLException {
-		try (Statement st = this.connection.createStatement()) {
-			st.addBatch("delete from comentario");
-			st.addBatch("delete from tweet");
-			st.addBatch("delete from usuario");
-			st.addBatch("alter sequence seq_usuario restart");
-			st.addBatch("alter sequence seq_tweet restart");
-			st.addBatch("alter sequence seq_comentario restart");
-			st.executeBatch();
-		} finally {
-			this.connection.close();
-		}
 	}
 
 	@Test

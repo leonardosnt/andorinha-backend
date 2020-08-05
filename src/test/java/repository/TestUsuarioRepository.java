@@ -2,14 +2,10 @@ package repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,30 +14,18 @@ import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
 import runner.AndorinhaTestRunner;
+import runner.DatabaseHelper;
 
 @RunWith(AndorinhaTestRunner.class)
 public class TestUsuarioRepository {
 
 	private UsuarioRepository usuarioRepository;
-	private Connection connection;
 
 	@Before
 	public void setUp() throws SQLException {
+		DatabaseHelper.getInstance("andorinhaDS").executeSqlScript("sql/prepare-database.sql");
+
 		this.usuarioRepository = new UsuarioRepository();
-
-		this.connection = DriverManager.getConnection("jdbc:postgresql://localhost/andorinha_test", "postgres", "postgres");
-	}
-
-	@After
-	public void tearDown() throws SQLException {
-		// Reseta a tabela usuário e a sequência, após cada teste, fazendo com que os testes sejam determinísticos.
-		try (PreparedStatement deletePs = connection.prepareStatement("delete from usuario");
-			 PreparedStatement resetPs = connection.prepareStatement("alter sequence seq_usuario restart")) {
-			deletePs.executeUpdate();
-			resetPs.executeUpdate();
-		} finally {
-			this.connection.close();
-		}
 	}
 
 	@Test

@@ -1,0 +1,6 @@
+DELETE FROM comentario;
+DELETE FROM tweet; 
+DELETE FROM usuario;
+ALTER SEQUENCE seq_usuario RESTART;
+ALTER SEQUENCE seq_tweet RESTART;
+ALTER SEQUENCE seq_comentario RESTART;
