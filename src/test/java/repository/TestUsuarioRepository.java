@@ -1,9 +1,9 @@
 package repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -22,12 +22,15 @@ import runner.DatabaseHelper;
 @RunWith(AndorinhaTestRunner.class)
 public class TestUsuarioRepository {
 
+	private static final int ID_USUARIO_CONSULTA = 1;
+	private static final int ID_USUARIO_REMOVER = 2;
+
 	@EJB
 	private UsuarioRepository usuarioRepository;
 
 	@Before
 	public void setUp() throws SQLException {
-		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml", DatabaseOperation.CLEAN_INSERT);
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/usuario.xml", DatabaseOperation.CLEAN_INSERT);
 	}
 
 	@Test
@@ -38,26 +41,20 @@ public class TestUsuarioRepository {
 
 		Usuario inserido = this.usuarioRepository.consultar(user.getId());
 
-		assertThat( user.getId() ).isGreaterThan(0);
+		assertThat(user.getId()).isGreaterThan(0);
 
-		assertThat( inserido ).isNotNull();
-		assertThat( inserido.getNome() ).isEqualTo(user.getNome());
-		assertThat( inserido.getId() ).isEqualTo(user.getId());
+		assertThat(inserido).isNotNull();
+		assertThat(inserido.getNome()).isEqualTo(user.getNome());
+		assertThat(inserido.getId()).isEqualTo(user.getId());
 	}
 
 	@Test
 	public void testa_consultar_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario novoUsuario = new Usuario();
-		novoUsuario.setNome("Usuario do Teste de Unidade");
-		this.usuarioRepository.inserir(novoUsuario);
+		Usuario usuarioConsultado = this.usuarioRepository.consultar(ID_USUARIO_CONSULTA);
 
-		assertThat( novoUsuario.getId() ).isGreaterThan( 0 );
-
-		Usuario usuarioConsultado = this.usuarioRepository.consultar(novoUsuario.getId());
-
-		assertThat( usuarioConsultado ).isNotNull();
-		assertThat( usuarioConsultado.getNome() ).isEqualTo("Usuario do Teste de Unidade");
-		assertThat( usuarioConsultado.getId() ).isEqualTo(novoUsuario.getId());
+		assertThat(usuarioConsultado).isNotNull();
+		assertThat(usuarioConsultado.getId()).isEqualTo(ID_USUARIO_CONSULTA);
+		assertThat(usuarioConsultado.getNome()).isEqualTo("Usuário 1");
 	}
 
 	@Test
@@ -67,7 +64,7 @@ public class TestUsuarioRepository {
 		novoUsuario.setNome("Usuario do Teste de Unidade");
 		this.usuarioRepository.inserir(novoUsuario);
 
-		assertThat( novoUsuario.getId() ).isGreaterThan( 0 );
+		assertThat(novoUsuario.getId()).isGreaterThan(0);
 
 		// Atualiza o nome do usuário inserido
 		novoUsuario.setNome("Nome Alterado");
@@ -81,36 +78,30 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
+	public void testa_remover_usuario_com_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		assertThatThrownBy(() -> {
+			this.usuarioRepository.remover(ID_USUARIO_CONSULTA);
+		}).isInstanceOf(ErroAoConsultarBaseException.class)
+				.hasMessageContaining("Ocorreu um erro ao remover o usuário");
+	}
+
+	@Test
 	public void testa_remover_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario novoUsuario = new Usuario();
-		novoUsuario.setNome("Usuario Teste");
-		this.usuarioRepository.inserir(novoUsuario);
+		this.usuarioRepository.remover(ID_USUARIO_REMOVER);
 
-		assertThat(novoUsuario.getId()).isGreaterThan(0);
-
-		this.usuarioRepository.remover(novoUsuario.getId());
-
-		Usuario usuarioRemovido = this.usuarioRepository.consultar(novoUsuario.getId());
+		Usuario usuarioRemovido = this.usuarioRepository.consultar(ID_USUARIO_REMOVER);
 		assertThat(usuarioRemovido).isNull();
 	}
 
 	@Test
 	public void testa_listar_todos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		int numUsuariosTeste = 3;
-		List<Usuario> usuariosEsperados = new ArrayList<>();
-
-		for (int i = 0; i < numUsuariosTeste; i++) {
-			Usuario novoUsuario = new Usuario();
-			novoUsuario.setNome("Usuario Teste #" + i);
-			this.usuarioRepository.inserir(novoUsuario);
-
-			usuariosEsperados.add(novoUsuario);
-		}
-
 		List<Usuario> usuarios = this.usuarioRepository.listarTodos();
 
-		assertThat(usuarios.size()).isEqualTo(numUsuariosTeste);
-		assertThat(usuarios).containsExactlyInAnyOrderElementsOf(usuariosEsperados);
+		assertThat(usuarios).isNotNull().hasSize(3);
+
+		assertThat(usuarios).extracting("nome").containsExactlyInAnyOrder("Usuário 1", "Usuário 2", "Usuário 3");
+
+		assertThat(usuarios).extracting("id").containsExactlyInAnyOrder(1, 2, 3);
 	}
 
 }

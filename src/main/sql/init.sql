@@ -16,7 +16,7 @@ CREATE TABLE tweet (
     id_usuario INTEGER,
 
     CONSTRAINT pk_tweet PRIMARY KEY (id),
-    CONSTRAINT fk_tweet_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id)
+    CONSTRAINT fk_tweet_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id) ON DELETE RESTRICT
 );
 
 CREATE TABLE comentario (
@@ -27,8 +27,8 @@ CREATE TABLE comentario (
     id_tweet INTEGER,
 
     CONSTRAINT pk_comentario PRIMARY KEY (id),
-    CONSTRAINT fk_comentario_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id),
-    CONSTRAINT fk_comentario_tweet FOREIGN KEY (id_tweet) REFERENCES tweet (id)
+    CONSTRAINT fk_comentario_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id) ON DELETE RESTRICT,
+    CONSTRAINT fk_comentario_tweet FOREIGN KEY (id_tweet) REFERENCES tweet (id) ON DELETE CASCADE
 );
 
 CREATE SEQUENCE seq_usuario START WITH 1 INCREMENT BY 1;

@@ -33,7 +33,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 			ps.close();
 			
 		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao inserir usuário", e);
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao inserir o usuário", e);
 		}
 	}
 	
@@ -44,7 +44,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 			ps.setInt(2, usuario.getId());
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar usuário", e);
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar o usuário", e);
 		}
 	}
 	
@@ -54,7 +54,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 			ps.setInt(1, id);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao remover usuário", e);
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao remover o usuário", e);
 		}
 	}
 	
@@ -80,7 +80,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 			return user;
 			
 		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao consultar usuário", e);
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao consultar o usuário", e);
 		}
 	}
 	
