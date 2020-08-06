@@ -12,7 +12,7 @@ CREATE TABLE usuario (
 CREATE TABLE tweet (
     id INTEGER,
     conteudo VARCHAR NOT NULL,
-    data_criacao TIMESTAMP NOT NULL,
+    data_postagem TIMESTAMP NOT NULL,
     id_usuario INTEGER,
 
     CONSTRAINT pk_tweet PRIMARY KEY (id),
@@ -22,7 +22,7 @@ CREATE TABLE tweet (
 CREATE TABLE comentario (
     id INTEGER,
     conteudo VARCHAR NOT NULL,
-    data_criacao TIMESTAMP NOT NULL,
+    data_postagem TIMESTAMP NOT NULL,
     id_usuario INTEGER,
     id_tweet INTEGER,
 

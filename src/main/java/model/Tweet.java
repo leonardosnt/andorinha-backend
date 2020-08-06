@@ -6,7 +6,7 @@ public class Tweet {
 	
 	private int id;
 	private String conteudo;
-	private Instant dataCriacao;
+	private Instant data;
 	private Usuario usuario;
 	
 	public int getId() {
@@ -21,11 +21,11 @@ public class Tweet {
 	public void setConteudo(String conteudo) {
 		this.conteudo = conteudo;
 	}
-	public Instant getDataCriacao() {
-		return dataCriacao;
+	public Instant getData() {
+		return data;
 	}
-	public void setDataCriacao(Instant dataCriacao) {
-		this.dataCriacao = dataCriacao;
+	public void setData(Instant data) {
+		this.data = data;
 	}
 	public Usuario getUsuario() {
 		return usuario;
@@ -39,7 +39,7 @@ public class Tweet {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((conteudo == null) ? 0 : conteudo.hashCode());
-		result = prime * result + ((dataCriacao == null) ? 0 : dataCriacao.hashCode());
+		result = prime * result + ((data == null) ? 0 : data.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((usuario == null) ? 0 : usuario.hashCode());
 		return result;
@@ -58,10 +58,10 @@ public class Tweet {
 				return false;
 		} else if (!conteudo.equals(other.conteudo))
 			return false;
-		if (dataCriacao == null) {
-			if (other.dataCriacao != null)
+		if (data == null) {
+			if (other.data != null)
 				return false;
-		} else if (!dataCriacao.equals(other.dataCriacao))
+		} else if (!data.equals(other.data))
 			return false;
 		if (id != other.id)
 			return false;

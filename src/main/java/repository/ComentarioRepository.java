@@ -17,8 +17,8 @@ import model.exceptions.ErroAoConsultarBaseException;
 public class ComentarioRepository extends AbstractCrudRepository {
 
 	private static final String SELECIONAR_TODOS_COMENTARIOS_SQL =
-			  "SELECT comentario.id, id_tweet, comentario.conteudo, comentario.data_criacao, "
-			+ "  tweet.conteudo as conteudo_tweet, tweet.data_criacao as data_criacao_tweet, "
+			  "SELECT comentario.id, id_tweet, comentario.conteudo, comentario.data_postagem, "
+			+ "  tweet.conteudo as conteudo_tweet, tweet.data_postagem as data_postagem_tweet, "
 			+ "  autor.nome as nome_autor, autor.id as id_autor, "
 			+ "  autor_tweet.nome as nome_autor_tweet, autor_tweet.id as id_autor_tweet "
 			+ "  FROM comentario"
@@ -34,11 +34,11 @@ public class ComentarioRepository extends AbstractCrudRepository {
 			int id = this.recuperarProximoValorDaSequence("seq_comentario");
 			comentario.setId(id);
 
-			String sql = "INSERT INTO comentario (id, conteudo, data_criacao, id_tweet, id_usuario) VALUES (?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO comentario (id, conteudo, data_postagem, id_tweet, id_usuario) VALUES (?, ?, ?, ?, ?)";
 			PreparedStatement ps = c.prepareStatement(sql);
 			ps.setInt(1, comentario.getId());
 			ps.setString(2, comentario.getConteudo());
-			ps.setTimestamp(3, Timestamp.from(comentario.getDataCriacao()));
+			ps.setTimestamp(3, Timestamp.from(comentario.getData()));
 			ps.setInt(4, comentario.getTweet().getId());
 			ps.setInt(5, comentario.getUsuario().getId());
 			ps.execute();
@@ -50,10 +50,10 @@ public class ComentarioRepository extends AbstractCrudRepository {
 
 	public void atualizar(Comentario comentario) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		try (Connection c = this.abrirConexao()) {
-			String sql = "UPDATE comentario SET conteudo = ?, data_criacao = ?, id_tweet = ?, id_usuario = ? WHERE id = ?";
+			String sql = "UPDATE comentario SET conteudo = ?, data_postagem = ?, id_tweet = ?, id_usuario = ? WHERE id = ?";
 			PreparedStatement ps = c.prepareStatement(sql);
 			ps.setString(1, comentario.getConteudo());
-			ps.setTimestamp(2, Timestamp.from(comentario.getDataCriacao()));
+			ps.setTimestamp(2, Timestamp.from(comentario.getData()));
 			ps.setInt(3, comentario.getTweet().getId());
 			ps.setInt(4, comentario.getUsuario().getId());
 			ps.setInt(5, comentario.getId());
@@ -115,7 +115,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		Comentario comentario = new Comentario();
 		comentario.setId(rs.getInt("id"));
 		comentario.setConteudo(rs.getString("conteudo"));
-		comentario.setDataCriacao(rs.getTimestamp("data_criacao").toInstant());
+		comentario.setData(rs.getTimestamp("data_postagem").toInstant());
 
 		Usuario usuario = new Usuario();
 		usuario.setId(rs.getInt("id_autor"));
@@ -126,7 +126,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		Tweet tweet = new Tweet();
 		tweet.setId(rs.getInt("id_tweet"));
 		tweet.setConteudo(rs.getString("conteudo_tweet"));
-		tweet.setDataCriacao(rs.getTimestamp("data_criacao_tweet").toInstant());
+		tweet.setData(rs.getTimestamp("data_postagem_tweet").toInstant());
 
 		Usuario autorTweet = new Usuario();
 		autorTweet.setId(rs.getInt("id_autor_tweet"));

@@ -51,7 +51,7 @@ public class TestComentarioRepository {
 
 		Comentario comentario = new Comentario();
 		comentario.setConteudo("Teste");
-		comentario.setDataCriacao(Instant.now());
+		comentario.setData(Instant.now());
 		comentario.setUsuario(autorComentario);
 		comentario.setTweet(tweet);
 
@@ -84,7 +84,7 @@ public class TestComentarioRepository {
 		Instant dataAlterada = Instant.now().minusSeconds(100);
 
 		comentario.setConteudo("Conteúdo alterado!");
-		comentario.setDataCriacao(dataAlterada);
+		comentario.setData(dataAlterada);
 		comentario.setTweet(novoTweet);
 		comentario.setUsuario(novoUsuario);
 
@@ -95,7 +95,7 @@ public class TestComentarioRepository {
 		assertThat(alterado.getConteudo()).isEqualTo("Conteúdo alterado!");
 		assertThat(alterado.getTweet()).isEqualTo(novoTweet);
 		assertThat(alterado.getUsuario()).isEqualTo(novoUsuario);
-		assertThat(alterado.getDataCriacao()).isEqualTo(dataAlterada);
+		assertThat(alterado.getData()).isEqualTo(dataAlterada);
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class TestComentarioRepository {
 	private Comentario inserirComentarioDeTeste(Usuario autor, Tweet tweet, String conteudo) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		Comentario comentario = new Comentario();
 		comentario.setConteudo(conteudo);
-		comentario.setDataCriacao(Instant.now());
+		comentario.setData(Instant.now());
 		comentario.setUsuario(autor);
 		comentario.setTweet(tweet);
 
@@ -164,7 +164,7 @@ public class TestComentarioRepository {
 	private Tweet inserirTweetDeTeste(Usuario usuario, String conteudo) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		Tweet tweet = new Tweet();
 		tweet.setConteudo("Hello World!");
-		tweet.setDataCriacao(Instant.now());
+		tweet.setData(Instant.now());
 		tweet.setUsuario(usuario);
 		this.tweetRepository.inserir(tweet);
 

@@ -20,10 +20,10 @@ public class TweetRepository extends AbstractCrudRepository {
 			int id = this.recuperarProximoValorDaSequence("seq_tweet");
 			tweet.setId(id);
 
-			PreparedStatement ps = c.prepareStatement("insert into tweet (id, conteudo, data_criacao, id_usuario) values (?, ?, ?, ?)");
+			PreparedStatement ps = c.prepareStatement("insert into tweet (id, conteudo, data_postagem, id_usuario) values (?, ?, ?, ?)");
 			ps.setInt(1, tweet.getId());
 			ps.setString(2, tweet.getConteudo());
-			ps.setTimestamp(3, Timestamp.from(tweet.getDataCriacao()));
+			ps.setTimestamp(3, Timestamp.from(tweet.getData()));
 			ps.setInt(4, tweet.getUsuario().getId());
 			ps.execute();
 			ps.close();
@@ -34,9 +34,9 @@ public class TweetRepository extends AbstractCrudRepository {
 
 	public void atualizar(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		try (Connection c = this.abrirConexao()) {
-			PreparedStatement ps = c.prepareStatement("update tweet set conteudo = ?, data_criacao = ?, id_usuario = ? where id = ?");
+			PreparedStatement ps = c.prepareStatement("update tweet set conteudo = ?, data_postagem = ?, id_usuario = ? where id = ?");
 			ps.setString(1, tweet.getConteudo());
-			ps.setTimestamp(2, Timestamp.from(tweet.getDataCriacao()));
+			ps.setTimestamp(2, Timestamp.from(tweet.getData()));
 			ps.setInt(3, tweet.getUsuario().getId());
 			ps.setInt(4, tweet.getId());
 			ps.execute();
@@ -58,7 +58,7 @@ public class TweetRepository extends AbstractCrudRepository {
 
 	public Tweet consultar(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		try (Connection c = this.abrirConexao()) {
-			String sql = "SELECT conteudo, data_criacao, id_usuario, nome FROM tweet"
+			String sql = "SELECT conteudo, data_postagem, id_usuario, nome FROM tweet"
 					+ " JOIN usuario ON usuario.id = id_usuario"
 					+ " WHERE tweet.id = ?";
 
@@ -71,7 +71,7 @@ public class TweetRepository extends AbstractCrudRepository {
 				tweet = new Tweet();
 				tweet.setId(id);
 				tweet.setConteudo(rs.getString("conteudo"));
-				tweet.setDataCriacao(rs.getTimestamp("data_criacao").toInstant());
+				tweet.setData(rs.getTimestamp("data_postagem").toInstant());
 
 				Usuario usuario = new Usuario();
 				usuario.setId(rs.getInt("id_usuario"));
@@ -92,7 +92,7 @@ public class TweetRepository extends AbstractCrudRepository {
 		List<Tweet> tweets = new ArrayList<Tweet>();
 
 		try (Connection c = this.abrirConexao()) {
-			String sql = "SELECT tweet.id as id_tweet, conteudo, data_criacao, id_usuario, nome FROM tweet"
+			String sql = "SELECT tweet.id as id_tweet, conteudo, data_postagem, id_usuario, nome FROM tweet"
 					+ " JOIN usuario ON usuario.id = id_usuario";
 
 			PreparedStatement ps = c.prepareStatement(sql);
@@ -102,7 +102,7 @@ public class TweetRepository extends AbstractCrudRepository {
 				Tweet tweet = new Tweet();
 				tweet.setId(rs.getInt("id_tweet"));
 				tweet.setConteudo(rs.getString("conteudo"));
-				tweet.setDataCriacao(rs.getTimestamp("data_criacao").toInstant());
+				tweet.setData(rs.getTimestamp("data_postagem").toInstant());
 
 				Usuario usuario = new Usuario();
 				usuario.setId(rs.getInt("id_usuario"));

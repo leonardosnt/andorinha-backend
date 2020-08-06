@@ -98,7 +98,7 @@ public class TestTweetRepository {
 	private Tweet inserirTweetDeTeste(Usuario usuario, String conteudo) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		Tweet tweet = new Tweet();
 		tweet.setConteudo("Hello World!");
-		tweet.setDataCriacao(Instant.now());
+		tweet.setData(Instant.now());
 		tweet.setUsuario(usuario);
 		this.tweetRepository.inserir(tweet);
 
