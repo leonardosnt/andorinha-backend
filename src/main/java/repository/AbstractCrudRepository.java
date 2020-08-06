@@ -1,19 +1,24 @@
 package repository;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
 
 public abstract class AbstractCrudRepository {
 	
+	@Resource(name = "andorinhaDS")
+	protected DataSource ds;
+
 	protected Connection abrirConexao() throws ErroAoConectarNaBaseException {
 		try {
-			return DriverManager.getConnection("jdbc:postgresql://localhost/andorinha_test", "postgres", "postgres");
+			return ds.getConnection();
 		} catch (SQLException e) {
 			throw new ErroAoConectarNaBaseException("Ocorreu um erro ao acesar a base de dados", e);
 		}

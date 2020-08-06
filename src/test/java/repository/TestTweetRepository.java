@@ -7,6 +7,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
+
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,15 +24,15 @@ import runner.DatabaseHelper;
 @RunWith(AndorinhaTestRunner.class)
 public class TestTweetRepository {
 
+	@EJB
 	private TweetRepository tweetRepository;
+
+	@EJB
 	private UsuarioRepository usuarioRepository;
 
 	@Before
 	public void setUp() throws SQLException {
 		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml", DatabaseOperation.CLEAN_INSERT);
-
-		this.usuarioRepository = new UsuarioRepository();
-		this.tweetRepository = new TweetRepository();
 	}
 
 	@Test
