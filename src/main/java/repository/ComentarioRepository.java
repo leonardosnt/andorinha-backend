@@ -109,7 +109,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 
 		try (Connection c = this.abrirConexao()) {
 			StringBuilder sql = new StringBuilder(SELECIONAR_TODOS_COMENTARIOS_SQL);
-			adicionaFiltros(sql, seletor);
+			adicionarFiltros(sql, seletor);
 
 			PreparedStatement ps = c.prepareStatement(sql.toString());
 			adicionarParametros(ps, seletor);
@@ -131,7 +131,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 	public Long contar(ComentarioSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
 		try (Connection c = this.abrirConexao()) {
 			StringBuilder sql = new StringBuilder("SELECT count(*) as total FROM comentario");
-			adicionaFiltros(sql, seletor);
+			adicionarFiltros(sql, seletor);
 
 			PreparedStatement ps = c.prepareStatement(sql.toString());
 			adicionarParametros(ps, seletor);
@@ -150,7 +150,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		}
 	}
 
-	private void adicionaFiltros(StringBuilder sql, ComentarioSeletor seletor) {
+	private void adicionarFiltros(StringBuilder sql, ComentarioSeletor seletor) {
 		if (!seletor.possuiFiltro()) return;
 
 		sql.append(" WHERE ");

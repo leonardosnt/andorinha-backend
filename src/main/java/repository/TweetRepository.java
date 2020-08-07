@@ -111,7 +111,7 @@ public class TweetRepository extends AbstractCrudRepository {
 			StringBuilder sql = new StringBuilder(
 					"SELECT tweet.id as id_tweet, conteudo, data_postagem, id_usuario, nome FROM tweet"
 					+ " JOIN usuario ON usuario.id = id_usuario");
-			adicionaFiltros(sql, seletor);
+			adicionarFiltros(sql, seletor);
 
 			PreparedStatement ps = c.prepareStatement(sql.toString());
 			adicionaParametros(ps, seletor);
@@ -132,7 +132,7 @@ public class TweetRepository extends AbstractCrudRepository {
 	public Long contar(TweetSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
 		try (Connection c = this.abrirConexao()) {
 			StringBuilder sql = new StringBuilder("SELECT count(*) as total FROM tweet");
-			adicionaFiltros(sql, seletor);
+			adicionarFiltros(sql, seletor);
 
 			PreparedStatement ps = c.prepareStatement(sql.toString());
 			adicionaParametros(ps, seletor);
@@ -151,7 +151,7 @@ public class TweetRepository extends AbstractCrudRepository {
 		}
 	}
 
-	private void adicionaFiltros(StringBuilder sql, TweetSeletor seletor) {
+	private void adicionarFiltros(StringBuilder sql, TweetSeletor seletor) {
 		if (!seletor.possuiFiltro()) return;
 
 		sql.append(" WHERE ");
