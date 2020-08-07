@@ -2,16 +2,19 @@ package model.seletor;
 
 import java.util.Calendar;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ComentarioSeletor {
-	
+
 	private Integer id;
 	private String conteudo;
 	private Calendar data;
 	private Integer idUsuario;
 	private Integer idTweet;
 
-    private Integer limite; //10
-    private Integer pagina; //3
+	private Integer limite; //10
+	private Integer pagina; //3
+
 	public Integer getId() {
 		return id;
 	}
@@ -53,6 +56,10 @@ public class ComentarioSeletor {
 	}
 	public void setIdUsuario(Integer idUsuario) {
 		this.idUsuario = idUsuario;
-	}	
-	
+	}
+	public boolean possuiFiltro() {
+		return id != null || idTweet != null || idUsuario != null ||
+				data != null || !StringUtils.isBlank(conteudo);
+	}
+
 }

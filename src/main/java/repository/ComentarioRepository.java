@@ -1,6 +1,7 @@
 package repository;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +12,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
+
+import org.apache.commons.lang3.StringUtils;
 
 import model.Comentario;
 import model.Tweet;
@@ -86,7 +89,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				comentario = fromResultSet(rs);
+				comentario = criarModel(rs);
 			}
 			rs.close();
 			ps.close();
@@ -98,34 +101,119 @@ public class ComentarioRepository extends AbstractCrudRepository {
 	}
 
 	public List<Comentario> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		return pesquisar(new ComentarioSeletor());
+	}
+
+	public List<Comentario> pesquisar(ComentarioSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
 		List<Comentario> comentarios = new ArrayList<>();
 
 		try (Connection c = this.abrirConexao()) {
-			PreparedStatement ps = c.prepareStatement(SELECIONAR_TODOS_COMENTARIOS_SQL);
-			ResultSet rs = ps.executeQuery();
+			StringBuilder sql = new StringBuilder(SELECIONAR_TODOS_COMENTARIOS_SQL);
+			adicionaFiltros(sql, seletor);
 
+			PreparedStatement ps = c.prepareStatement(sql.toString());
+			adicionarParametros(ps, seletor);
+
+			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				Comentario comentario = fromResultSet(rs);
+				Comentario comentario = criarModel(rs);
 				comentarios.add(comentario);
 			}
 			rs.close();
 			ps.close();
 		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao listar os comentários", e);
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao pesquisar os comentários", e);
 		}
 
 		return comentarios;
 	}
 
-	public List<Comentario> pesquisar(ComentarioSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
-		return null;
-	}
-
 	public Long contar(ComentarioSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
-		return 0L;
+		try (Connection c = this.abrirConexao()) {
+			StringBuilder sql = new StringBuilder("SELECT count(*) as total FROM comentario");
+			adicionaFiltros(sql, seletor);
+
+			PreparedStatement ps = c.prepareStatement(sql.toString());
+			adicionarParametros(ps, seletor);
+
+			long total = 0;
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				total = rs.getLong("total");
+			}
+			rs.close();
+			ps.close();
+
+			return total;
+		} catch (SQLException e) {
+			throw new ErroAoConsultarBaseException("Ocorreu um erro ao contar os comentários", e);
+		}
 	}
 
-	private Comentario fromResultSet(ResultSet rs) throws SQLException {
+	private void adicionaFiltros(StringBuilder sql, ComentarioSeletor seletor) {
+		if (!seletor.possuiFiltro()) return;
+
+		sql.append(" WHERE ");
+
+		boolean primeiroFiltro = true;
+
+		if (seletor.getId() != null) {
+			primeiroFiltro = false;
+			sql.append(" id = ? ");
+		}
+
+		if (seletor.getIdTweet() != null) {
+			if (!primeiroFiltro) sql.append(" AND ");
+			primeiroFiltro = false;
+			sql.append(" id_tweet = ? ");
+		}
+
+		if (seletor.getIdUsuario() != null) {
+			if (!primeiroFiltro) sql.append(" AND ");
+			primeiroFiltro = false;
+			sql.append(" comentario.id_usuario = ? ");
+		}
+
+		if (!StringUtils.isBlank(seletor.getConteudo())) {
+			if (!primeiroFiltro) sql.append(" AND ");
+			primeiroFiltro = false;
+			sql.append(" conteudo LIKE ? ");
+		}
+
+		if (seletor.getData() != null) {
+			if (!primeiroFiltro) sql.append(" AND ");
+			primeiroFiltro = false;
+			sql.append(" comentario.data_postagem::date = ? ");
+		}
+	}
+
+	private void adicionarParametros(PreparedStatement ps, ComentarioSeletor seletor) throws SQLException {
+		if (!seletor.possuiFiltro()) return;
+
+		int index = 1;
+
+		if (seletor.getId() != null) {
+			ps.setInt(index++, seletor.getId());
+		}
+
+		if (seletor.getIdTweet() != null) {
+			ps.setInt(index++, seletor.getIdTweet());
+		}
+
+		if (seletor.getIdUsuario() != null) {
+			ps.setInt(index++, seletor.getIdUsuario());
+		}
+
+		if (!StringUtils.isBlank(seletor.getConteudo())) {
+			ps.setString(index++, String.format("%%%s%%", seletor.getConteudo()));
+		}
+
+		if (seletor.getData() != null) {
+			ps.setDate(index++, new Date(seletor.getData().getTimeInMillis()));
+		}
+	}
+
+	private Comentario criarModel(ResultSet rs) throws SQLException {
 		Comentario comentario = new Comentario();
 		comentario.setId(rs.getInt("id"));
 		comentario.setConteudo(rs.getString("conteudo"));

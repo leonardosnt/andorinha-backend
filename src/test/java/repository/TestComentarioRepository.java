@@ -3,6 +3,7 @@ package repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -133,10 +134,9 @@ public class TestComentarioRepository {
 
 		assertThat( comentarios ).isNotNull()
 							.isNotEmpty()
-							.hasSize(10)
+							.hasSize(1)
 							.extracting("conteudo")
-							.containsExactlyInAnyOrder("Comentário 1", "Comentário 2", "Comentário 3", "Comentário 4", "Comentário 5",
-														"Comentário 6", "Comentário 7", "Comentário 8", "Comentário 9", "Comentário 10");
+							.containsExactly("Comentário 5");
 
 		comentarios.stream().forEach(t -> {
 			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
@@ -146,5 +146,44 @@ public class TestComentarioRepository {
 		});
 	}
 
+	@Test
+	public void testa_contar_comentarios() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		{
+			ComentarioSeletor seletor = new ComentarioSeletor();
+			seletor.setIdTweet(2);
+
+			assertThat(this.comentarioRepository.contar(seletor)).isEqualTo(2);
+		}
+
+		{
+			ComentarioSeletor seletor = new ComentarioSeletor();
+			seletor.setIdUsuario(1);
+
+			assertThat(this.comentarioRepository.contar(seletor)).isEqualTo(2);
+		}
+
+		{
+			ComentarioSeletor seletor = new ComentarioSeletor();
+			seletor.setIdUsuario(1);
+			seletor.setConteudo("Comentário");
+
+			assertThat(this.comentarioRepository.contar(seletor)).isEqualTo(2);
+		}
+
+		{
+			ComentarioSeletor seletor = new ComentarioSeletor();
+			seletor.setIdUsuario(4);
+			seletor.setIdTweet(1);
+			seletor.setConteudo("Comentário 1" );
+			seletor.setData(new GregorianCalendar(2020, 5, 1));
+
+			long total = this.comentarioRepository.contar(seletor);
+			assertThat(total).isEqualTo(1);
+
+			seletor.setData(new GregorianCalendar(2020, 5, 5));
+
+			assertThat(this.comentarioRepository.contar(seletor)).isEqualTo(0);
+		}
+	}
 
 }
