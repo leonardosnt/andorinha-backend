@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
+import model.seletor.UsuarioSeletor;
 
 @Stateless
 public class UsuarioRepository extends AbstractCrudRepository {
@@ -106,6 +107,12 @@ public class UsuarioRepository extends AbstractCrudRepository {
 		return resultado;
 	}
 
+	public List<Usuario> pesquisar(UsuarioSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
+		return null;
+	}
 
+	public Long contar(UsuarioSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
+		return null;
+	}
 
 }

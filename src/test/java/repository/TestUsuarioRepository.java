@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
+import model.seletor.UsuarioSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
 
@@ -83,7 +84,7 @@ public class TestUsuarioRepository {
 	public void testa_remover_usuario_com_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
 		assertThatThrownBy(() -> { this.usuarioRepository.remover(ID_USUARIO_CONSULTA); })
 			.isInstanceOf(ErroAoConsultarBaseException.class)
-			.hasMessageContaining("Ocorreu um erro ao remover o usuário");
+        	.hasMessageContaining("Ocorreu um erro ao remover o usuário");
 	}
 
 	@Test
@@ -97,5 +98,42 @@ public class TestUsuarioRepository {
 							.containsExactlyInAnyOrder("Usuário 1", "Usuário 2",
 			                        "Usuário 3", "Usuário 4", "Usuário 5", "João", "José", "Maria", "Ana", "Joselito");
 	}
+
+	@Test
+	public void testa_pesquisar_usuarios_por_nome() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		UsuarioSeletor seletor = new UsuarioSeletor();
+		seletor.setNome("Jo");
+		List<Usuario> usuarios = this.usuarioRepository.pesquisar(seletor);
+
+		assertThat( usuarios ).isNotNull()
+							.isNotEmpty()
+							.hasSize(3)
+							.extracting("nome")
+							.containsExactlyInAnyOrder("João", "José", "Joselito");
+	}
+
+	@Test
+	public void testa_contar_usuarios_por_nome() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		UsuarioSeletor seletor = new UsuarioSeletor();
+		seletor.setNome("Usuário");
+		Long total = this.usuarioRepository.contar(seletor);
+
+		assertThat( total ).isNotNull()
+							.isEqualTo(5L);
+	}
+
+	@Test
+	public void testa_pesquisar_usuarios_por_id() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		UsuarioSeletor seletor = new UsuarioSeletor();
+		seletor.setId(3);
+		List<Usuario> usuarios = this.usuarioRepository.pesquisar(seletor);
+
+		assertThat( usuarios ).isNotNull()
+							.isNotEmpty()
+							.hasSize(1)
+							.extracting("nome")
+							.containsExactly("Usuário 3");
+	}
+
 
 }

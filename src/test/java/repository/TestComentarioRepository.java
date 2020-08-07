@@ -17,6 +17,7 @@ import model.Tweet;
 import model.Usuario;
 import model.exceptions.ErroAoConectarNaBaseException;
 import model.exceptions.ErroAoConsultarBaseException;
+import model.seletor.ComentarioSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
 
@@ -120,5 +121,30 @@ public class TestComentarioRepository {
 			assertThat(t.getTweet().getUsuario()).isNotNull();
 		});
 	}
+
+	@Test
+	public void testa_pesquisar_comentarios_filtrado_por_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+
+		ComentarioSeletor seletor = new ComentarioSeletor();
+		seletor.setIdTweet( 2 );
+		seletor.setIdUsuario( 1 );
+
+		List<Comentario> comentarios = this.comentarioRepository.pesquisar( seletor );
+
+		assertThat( comentarios ).isNotNull()
+							.isNotEmpty()
+							.hasSize(10)
+							.extracting("conteudo")
+							.containsExactlyInAnyOrder("Comentário 1", "Comentário 2", "Comentário 3", "Comentário 4", "Comentário 5",
+														"Comentário 6", "Comentário 7", "Comentário 8", "Comentário 9", "Comentário 10");
+
+		comentarios.stream().forEach(t -> {
+			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
+			assertThat(t.getUsuario()).isNotNull();
+			assertThat(t.getTweet()).isNotNull();
+			assertThat(t.getTweet().getUsuario()).isNotNull();
+		});
+	}
+
 
 }
