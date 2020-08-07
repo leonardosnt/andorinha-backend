@@ -2,9 +2,7 @@ package repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.SQLException;
-import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -24,93 +22,94 @@ import runner.DatabaseHelper;
 @RunWith(AndorinhaTestRunner.class)
 public class TestTweetRepository {
 
-	@EJB
-	private TweetRepository tweetRepository;
+	private static final int ID_TWEET_CONSULTA = 1;
+	private static final int ID_USUARIO_CONSULTA = 1;
+
+	private static final long DELTA_MILIS = 500;
 
 	@EJB
 	private UsuarioRepository usuarioRepository;
 
+	@EJB
+	private TweetRepository tweetRepository;
+
 	@Before
-	public void setUp() throws SQLException {
+	public void setUp() {
 		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml", DatabaseOperation.CLEAN_INSERT);
 	}
 
 	@Test
-	public void testa_inserir_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweet = inserirTweetDeTeste();
+	public void testa_se_tweet_foi_inserido() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Usuario user = this.usuarioRepository.consultar(ID_USUARIO_CONSULTA);
 
-		assertThat(tweet.getId()).isGreaterThan(0);
+		Tweet tweet = new Tweet();
+		tweet.setConteudo("Minha postagem de teste");
+		tweet.setUsuario(user);
+
+		this.tweetRepository.inserir(tweet);
+
+		assertThat( tweet.getId() ).isGreaterThan(0);
+
+		Tweet inserido = this.tweetRepository.consultar(tweet.getId());
+
+		assertThat( inserido ).isNotNull();
+		assertThat( inserido.getConteudo() ).isEqualTo(tweet.getConteudo());
+		assertThat( Calendar.getInstance().getTime() )
+			.isCloseTo(inserido.getData().getTime(), DELTA_MILIS);
 	}
 
 	@Test
 	public void testa_consultar_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweetInserido = inserirTweetDeTeste();
+		Tweet tweet = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
 
-		Tweet tweetConsulta = this.tweetRepository.consultar(tweetInserido.getId());
-
-		assertThat(tweetConsulta).isNotNull();
-		assertThat(tweetConsulta).isEqualTo(tweetInserido);
+		assertThat( tweet ).isNotNull();
+		assertThat( tweet.getConteudo() ).isEqualTo("Minha postagem de teste");
+		assertThat( tweet.getId() ).isEqualTo(ID_TWEET_CONSULTA);
+		assertThat( tweet.getUsuario() ).isNotNull();
 	}
 
 	@Test
-	public void testa_atualizar_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweetInserido = inserirTweetDeTeste();
-		tweetInserido.setConteudo("Olá, mundo!");
+	public void testa_alterar_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Tweet tweet = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
+		tweet.setConteudo("Alterado!");
 
-		this.tweetRepository.atualizar(tweetInserido);
+		this.tweetRepository.atualizar(tweet);
 
-		Tweet tweetAtualizado = this.tweetRepository.consultar(tweetInserido.getId());
-		assertThat(tweetAtualizado).isEqualTo(tweetInserido);
+		Tweet alterado = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
+
+		assertThat( alterado.getConteudo() ).isEqualTo(tweet.getConteudo());
+		assertThat( Calendar.getInstance().getTime() )
+			.isCloseTo(alterado.getData().getTime(), DELTA_MILIS);
 	}
 
 	@Test
 	public void testa_remover_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweetInserido = inserirTweetDeTeste();
+		Tweet tweet = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
+		assertThat( tweet ).isNotNull();
 
-		assertThat(tweetInserido.getId()).isGreaterThan(0);
+		this.tweetRepository.remover(ID_TWEET_CONSULTA);
 
-		this.tweetRepository.remover(tweetInserido.getId());
-
-		Tweet tweetRemovido = this.tweetRepository.consultar(tweetInserido.getId());
-		assertThat(tweetRemovido).isNull();
+		Tweet removido = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
+		assertThat( removido ).isNull();
 	}
 
 	@Test
-	public void testa_listar_todos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario u0 = inserirUsuarioDeTeste("Usuario 1");
-		Usuario u1 = inserirUsuarioDeTeste("Usuario 2");
+	public void testa_listar_todos_os_tweets() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		List<Tweet> tweets = this.tweetRepository.listarTodos();
 
-		List<Tweet> tweetsEsperados = new ArrayList<>();
-		tweetsEsperados.add(inserirTweetDeTeste(u0, "Hello World"));
-		tweetsEsperados.add(inserirTweetDeTeste(u1, "Hello World"));
+		assertThat( tweets ).isNotNull()
+							.isNotEmpty()
+							.hasSize(3)
+							.extracting("conteudo")
+							.containsExactlyInAnyOrder("Minha postagem de teste",
+														"Minha postagem de teste 2",
+														"Minha postagem de teste 3");
 
-		List<Tweet> todosTweets = this.tweetRepository.listarTodos();
-		assertThat(todosTweets).containsExactlyInAnyOrderElementsOf(tweetsEsperados);
+		tweets.stream().forEach(t -> {
+			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
+			assertThat(t.getUsuario()).isNotNull();
+		});
 	}
 
-	private Usuario inserirUsuarioDeTeste(String nome) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario usuario = new Usuario();
-		usuario.setNome(nome);
-		this.usuarioRepository.inserir(usuario);
-
-		assertThat(usuario.getId()).isGreaterThan(0);
-
-		return usuario;
-	}
-
-	private Tweet inserirTweetDeTeste(Usuario usuario, String conteudo) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweet = new Tweet();
-		tweet.setConteudo("Hello World!");
-		tweet.setData(Instant.now());
-		tweet.setUsuario(usuario);
-		this.tweetRepository.inserir(tweet);
-
-		return tweet;
-	}
-
-	private Tweet inserirTweetDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario usuario = inserirUsuarioDeTeste("Usuário Teste");
-		return inserirTweetDeTeste(usuario, "Conteúdo teste");
-	}
 
 }

@@ -1,12 +1,12 @@
 package model;
 
-import java.time.Instant;
+import java.util.Calendar;
 
 public class Comentario {
 	
 	private int id;
 	private String conteudo;
-	private Instant data;
+	private Calendar data;
 	private Usuario usuario;
 	private Tweet tweet;
 	
@@ -22,10 +22,10 @@ public class Comentario {
 	public void setConteudo(String conteudo) {
 		this.conteudo = conteudo;
 	}
-	public Instant getData() {
+	public Calendar getData() {
 		return data;
 	}
-	public void setData(Instant data) {
+	public void setData(Calendar data) {
 		this.data = data;
 	}
 	public Usuario getUsuario() {

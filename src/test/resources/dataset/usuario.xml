@@ -1,8 +1,0 @@
-<dataset>
-	<public.usuario id="1" nome="Usuário 1" />
-	<public.usuario id="2" nome="Usuário 2" />
-	<public.usuario id="3" nome="Usuário 3" />
-	
-	<public.tweet id="1" id_usuario="1" data_postagem="2020-04-08 15:45:20" conteudo="Minha postagem de teste" />
-	<public.comentario />
-</dataset>

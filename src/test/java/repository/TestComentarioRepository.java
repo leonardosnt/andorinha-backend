@@ -2,9 +2,7 @@ package repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.SQLException;
-import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -25,159 +23,102 @@ import runner.DatabaseHelper;
 @RunWith(AndorinhaTestRunner.class)
 public class TestComentarioRepository {
 
-	@EJB
-	private TweetRepository tweetRepository;
+	private static final int ID_TWEET_CONSULTA = 1;
+	private static final int ID_COMENTARIO_CONSULTA = 1;
+	private static final int ID_USUARIO_CONSULTA = 1;
+
+	private static final long DELTA_MILIS = 500;
 
 	@EJB
 	private UsuarioRepository usuarioRepository;
 
 	@EJB
+	private TweetRepository tweetRepository;
+
+	@EJB
 	private ComentarioRepository comentarioRepository;
 
 	@Before
-	public void setUp() throws SQLException {
+	public void setUp() {
 		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml", DatabaseOperation.CLEAN_INSERT);
 	}
 
 	@Test
-	public void testa_inserir_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Comentario comentario = inserirComentarioDeTeste();
+	public void testa_se_comentario_foi_inserido() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Usuario user = this.usuarioRepository.consultar(ID_USUARIO_CONSULTA);
+		Tweet tweet = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
 
-		assertThat(comentario.getId()).isGreaterThan(0);
+		Comentario c = new Comentario();
+		c.setConteudo("Meu comentário de teste");
+		c.setUsuario(user);
+		c.setTweet(tweet);
+
+		this.comentarioRepository.inserir(c);
+
+		assertThat( c.getId() ).isGreaterThan(0);
+
+		Comentario inserido = this.comentarioRepository.consultar(c.getId());
+
+		assertThat( inserido ).isNotNull();
+		assertThat( inserido.getConteudo() ).isEqualTo(c.getConteudo());
+		assertThat( Calendar.getInstance().getTime() )
+			.isCloseTo(inserido.getData().getTime(), DELTA_MILIS);
 	}
 
 	@Test
 	public void testa_consultar_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario autorTweet = inserirUsuarioDeTeste("Autor Tweet");
-		Usuario autorComentario = inserirUsuarioDeTeste("Autor Comentário");
+		Comentario c =  this.comentarioRepository.consultar(ID_COMENTARIO_CONSULTA);
 
-		Tweet tweet = inserirTweetDeTeste(autorTweet, "Hello World");
-
-		Comentario comentario = new Comentario();
-		comentario.setConteudo("Teste");
-		comentario.setData(Instant.now());
-		comentario.setUsuario(autorComentario);
-		comentario.setTweet(tweet);
-
-		this.comentarioRepository.inserir(comentario);
-
-		assertThat(comentario.getId()).isGreaterThan(0);
-
-		Comentario comentarioConsulta = this.comentarioRepository.consultar(comentario.getId());
-		assertThat(comentarioConsulta).isNotNull();
-		assertThat(comentarioConsulta.getId()).isEqualTo(comentario.getId());
-		assertThat(comentarioConsulta.getUsuario()).isEqualTo(autorComentario);
-
-		assertThat(comentarioConsulta.getTweet()).isEqualTo(tweet);
-		assertThat(comentarioConsulta.getTweet().getUsuario()).isEqualTo(autorTweet);
-
-		// Só isso já basta para comparar tudo já que todos os models implementam o equals,
-		// porém o feedback, caso não sejam iguals, não é muito bom, então achei melhor deixar
-		// os outros asserts também.
-		assertThat(comentarioConsulta.getTweet()).isEqualTo(tweet);
+		assertThat( c ).isNotNull();
+		assertThat( c.getConteudo() ).isEqualTo("Comentário 1");
+		assertThat( c.getId() ).isEqualTo(ID_COMENTARIO_CONSULTA);
+		assertThat( c.getUsuario() ).isNotNull();
+		assertThat( c.getTweet() ).isNotNull();
+		assertThat( c.getTweet().getUsuario() ).isNotNull();
 	}
 
 	@Test
-	public void testa_atualizar_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Comentario comentario = inserirComentarioDeTeste();
+	public void testa_alterar_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		Comentario c =  this.comentarioRepository.consultar(ID_COMENTARIO_CONSULTA);
+		c.setConteudo("Alterado!");
 
-		assertThat(comentario.getId()).isGreaterThan(0);
+		this.comentarioRepository.atualizar(c);
 
-		Usuario novoUsuario = inserirUsuarioDeTeste("Alterado");
-		Tweet novoTweet = inserirTweetDeTeste();
-		Instant dataAlterada = Instant.now().minusSeconds(100);
+		Comentario alterado = this.comentarioRepository.consultar(ID_COMENTARIO_CONSULTA);
 
-		comentario.setConteudo("Conteúdo alterado!");
-		comentario.setData(dataAlterada);
-		comentario.setTweet(novoTweet);
-		comentario.setUsuario(novoUsuario);
-
-		this.comentarioRepository.atualizar(comentario);
-
-		Comentario alterado = this.comentarioRepository.consultar(comentario.getId());
-
-		assertThat(alterado.getConteudo()).isEqualTo("Conteúdo alterado!");
-		assertThat(alterado.getTweet()).isEqualTo(novoTweet);
-		assertThat(alterado.getUsuario()).isEqualTo(novoUsuario);
-		assertThat(alterado.getData()).isEqualTo(dataAlterada);
+		assertThat( alterado.getConteudo() ).isEqualTo(c.getConteudo());
+		assertThat( Calendar.getInstance().getTime() )
+			.isCloseTo(alterado.getData().getTime(), DELTA_MILIS);
 	}
 
 	@Test
 	public void testa_remover_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Comentario comentario = inserirComentarioDeTeste();
+		Comentario c =  this.comentarioRepository.consultar(ID_COMENTARIO_CONSULTA);
+		assertThat( c ).isNotNull();
 
-		assertThat(comentario.getId()).isGreaterThan(0);
+		this.comentarioRepository.remover(ID_COMENTARIO_CONSULTA);
 
-		this.comentarioRepository.remover(comentario.getId());
-
-		Comentario removido = this.comentarioRepository.consultar(comentario.getId());
-
-		assertThat(removido).isNull();
+		Comentario removido =  this.comentarioRepository.consultar(ID_COMENTARIO_CONSULTA);
+		assertThat( removido ).isNull();
 	}
 
 	@Test
-	public void testa_listar_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweet1 = inserirTweetDeTeste();
-		Tweet tweet2 = inserirTweetDeTeste();
+	public void testa_listar_todos_os_comentarios() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		List<Comentario> comentarios = this.comentarioRepository.listarTodos();
 
-		Usuario autor1 = inserirUsuarioDeTeste("Autor 1");
-		Usuario autor2 = inserirUsuarioDeTeste("Autor 2");
+		assertThat( comentarios ).isNotNull()
+							.isNotEmpty()
+							.hasSize(10)
+							.extracting("conteudo")
+							.containsExactlyInAnyOrder("Comentário 1", "Comentário 2", "Comentário 3", "Comentário 4", "Comentário 5",
+														"Comentário 6", "Comentário 7", "Comentário 8", "Comentário 9", "Comentário 10");
 
-		List<Comentario> esperados = new ArrayList<>();
-
-		esperados.add(inserirComentarioDeTeste(autor1, tweet1, "Teste comentário 1"));
-		esperados.add(inserirComentarioDeTeste(autor1, tweet2, "Teste comentário 2"));
-
-		esperados.add(inserirComentarioDeTeste(autor2, tweet1, "Teste comentário 3"));
-		esperados.add(inserirComentarioDeTeste(autor2, tweet2, "Teste comentário 4"));
-
-		List<Comentario> todos = this.comentarioRepository.listarTodos();
-
-		assertThat(todos).containsExactlyInAnyOrderElementsOf(esperados);
-	}
-
-	private Comentario inserirComentarioDeTeste(Usuario autor, Tweet tweet, String conteudo) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Comentario comentario = new Comentario();
-		comentario.setConteudo(conteudo);
-		comentario.setData(Instant.now());
-		comentario.setUsuario(autor);
-		comentario.setTweet(tweet);
-
-		this.comentarioRepository.inserir(comentario);
-
-		return comentario;
-	}
-
-	private Comentario inserirComentarioDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweet = inserirTweetDeTeste();
-		Usuario autor = inserirUsuarioDeTeste("Teste");
-		return inserirComentarioDeTeste(autor, tweet, "Teste conteúdo");
-	}
-
-	// TODO: código duplicado do TestTweetRepository
-	private Usuario inserirUsuarioDeTeste(String nome) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario usuario = new Usuario();
-		usuario.setNome(nome);
-		this.usuarioRepository.inserir(usuario);
-
-		assertThat(usuario.getId()).isGreaterThan(0);
-
-		return usuario;
-	}
-
-	private Tweet inserirTweetDeTeste(Usuario usuario, String conteudo) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Tweet tweet = new Tweet();
-		tweet.setConteudo("Hello World!");
-		tweet.setData(Instant.now());
-		tweet.setUsuario(usuario);
-		this.tweetRepository.inserir(tweet);
-
-		return tweet;
-	}
-
-	private Tweet inserirTweetDeTeste() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		Usuario usuario = inserirUsuarioDeTeste("Usuário Teste");
-		return inserirTweetDeTeste(usuario, "Conteúdo teste");
+		comentarios.stream().forEach(t -> {
+			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
+			assertThat(t.getUsuario()).isNotNull();
+			assertThat(t.getTweet()).isNotNull();
+			assertThat(t.getTweet().getUsuario()).isNotNull();
+		});
 	}
 
 }

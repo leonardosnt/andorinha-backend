@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -41,7 +43,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 			PreparedStatement ps = c.prepareStatement(sql);
 			ps.setInt(1, comentario.getId());
 			ps.setString(2, comentario.getConteudo());
-			ps.setTimestamp(3, Timestamp.from(comentario.getData()));
+			ps.setTimestamp(3, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			ps.setInt(4, comentario.getTweet().getId());
 			ps.setInt(5, comentario.getUsuario().getId());
 			ps.execute();
@@ -56,7 +58,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 			String sql = "UPDATE comentario SET conteudo = ?, data_postagem = ?, id_tweet = ?, id_usuario = ? WHERE id = ?";
 			PreparedStatement ps = c.prepareStatement(sql);
 			ps.setString(1, comentario.getConteudo());
-			ps.setTimestamp(2, Timestamp.from(comentario.getData()));
+			ps.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));
 			ps.setInt(3, comentario.getTweet().getId());
 			ps.setInt(4, comentario.getUsuario().getId());
 			ps.setInt(5, comentario.getId());
@@ -118,7 +120,10 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		Comentario comentario = new Comentario();
 		comentario.setId(rs.getInt("id"));
 		comentario.setConteudo(rs.getString("conteudo"));
-		comentario.setData(rs.getTimestamp("data_postagem").toInstant());
+
+		Calendar dataPostagemComentario = new GregorianCalendar();
+		dataPostagemComentario.setTime(rs.getTimestamp("data_postagem"));
+		comentario.setData(dataPostagemComentario);
 
 		Usuario usuario = new Usuario();
 		usuario.setId(rs.getInt("id_autor"));
@@ -129,7 +134,10 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		Tweet tweet = new Tweet();
 		tweet.setId(rs.getInt("id_tweet"));
 		tweet.setConteudo(rs.getString("conteudo_tweet"));
-		tweet.setData(rs.getTimestamp("data_postagem_tweet").toInstant());
+
+		Calendar dataPostagemTweet = new GregorianCalendar();
+		dataPostagemTweet.setTime(rs.getTimestamp("data_postagem_tweet"));
+		tweet.setData(dataPostagemTweet);
 
 		Usuario autorTweet = new Usuario();
 		autorTweet.setId(rs.getInt("id_autor_tweet"));
