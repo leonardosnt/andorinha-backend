@@ -197,11 +197,19 @@ public class TestComentarioRepository {
 
 		assertThat(seletor.possuiPaginacao());
 
-		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(5);
+		assertThat(this.comentarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(5)
+			.extracting("id")
+			.containsExactly(1, 2, 3, 4, 5);
 
 		seletor.setPagina(2);
 
-		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(5);
+		assertThat(this.comentarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(5)
+			.extracting("id")
+			.containsExactly(6, 7, 8, 9, 10);
 
 		// Página "não existe"
 		seletor = new ComentarioSeletor();
