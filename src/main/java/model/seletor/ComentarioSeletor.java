@@ -12,8 +12,8 @@ public class ComentarioSeletor {
 	private Integer idUsuario;
 	private Integer idTweet;
 
-	private Integer limite; //10
-	private Integer pagina; //3
+	private int limite;
+	private int pagina;
 
 	public Integer getId() {
 		return id;
@@ -60,6 +60,9 @@ public class ComentarioSeletor {
 	public boolean possuiFiltro() {
 		return id != null || idTweet != null || idUsuario != null ||
 				data != null || !StringUtils.isBlank(conteudo);
+	}
+	public boolean possuiPaginacao() {
+		return limite > 0 && pagina > 0;
 	}
 
 }

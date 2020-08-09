@@ -186,4 +186,59 @@ public class TestComentarioRepository {
 		}
 	}
 
+	@Test
+	public void testa_paginacao() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
+
+		// Teste básico
+		ComentarioSeletor seletor = new ComentarioSeletor();
+		seletor.setLimite(5);
+		seletor.setPagina(1);
+
+		assertThat(seletor.possuiPaginacao());
+
+		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(5);
+
+		seletor.setPagina(2);
+
+		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(5);
+
+		// Página "não existe"
+		seletor = new ComentarioSeletor();
+		seletor.setLimite(10);
+		seletor.setPagina(100);
+
+		assertThat(seletor.possuiPaginacao());
+		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(0);
+
+		// Página com menos items que o limite
+		seletor = new ComentarioSeletor();
+		seletor.setLimite(6);
+		seletor.setPagina(2);
+
+		assertThat(seletor.possuiPaginacao());
+		assertThat(this.comentarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(4);
+	}
+
+	@Test
+	public void testa_paginacao_com_filtro() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
+
+		ComentarioSeletor seletor = new ComentarioSeletor();
+		seletor.setLimite(2);
+		seletor.setPagina(1);
+
+		// Este tweet possui 4 comentarios
+		seletor.setIdTweet(3);
+
+		assertThat(seletor.possuiPaginacao());
+		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(2);
+
+		seletor.setPagina(2);
+
+		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(2);
+	}
+
 }
