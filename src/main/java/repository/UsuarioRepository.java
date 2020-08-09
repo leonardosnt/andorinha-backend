@@ -136,33 +136,47 @@ public class UsuarioRepository extends AbstractCrudRepository {
 	}
 
 	private void adicionarFiltros(StringBuilder sql, UsuarioSeletor seletor) {
-		if (!seletor.possuiFiltro()) return;
-		sql.append(" WHERE ");
+		if (seletor.possuiFiltro()) {
+			sql.append(" WHERE ");
 
-		boolean primeiroFiltro = true;
-		if (seletor.getId() != null) {
-			primeiroFiltro = false;
-			sql.append("id = ? ");
-		}
-		if (!StringUtils.isBlank(seletor.getNome())) {
-			if (!primeiroFiltro) {
-				sql.append("AND ");
+			boolean primeiroFiltro = true;
+			if (seletor.getId() != null) {
+				primeiroFiltro = false;
+				sql.append("id = ? ");
 			}
-			sql.append("nome LIKE ?");
+			if (!StringUtils.isBlank(seletor.getNome())) {
+				if (!primeiroFiltro) {
+					sql.append("AND ");
+				}
+				sql.append("nome LIKE ?");
+			}
+		}
+
+		if (seletor.possuiPaginacao()) {
+			// Por padrão, os usuários serão ordenados pelo id.
+			sql.append(" ORDER BY usuario.id OFFSET ? LIMIT ? ");
 		}
 	}
 
 	private void adicionarParametros(PreparedStatement ps, UsuarioSeletor seletor) throws SQLException {
-		if (!seletor.possuiFiltro()) return;
-
 		int index = 1;
 
-		if (seletor.getId() != null) {
-			ps.setInt(index++, seletor.getId());
+		if (seletor.possuiFiltro()) {
+			if (seletor.getId() != null) {
+				ps.setInt(index++, seletor.getId());
+			}
+
+			if (!StringUtils.isBlank(seletor.getNome())) {
+				ps.setString(index++, String.format("%%%s%%", seletor.getNome()));
+			}
 		}
 
-		if (!StringUtils.isBlank(seletor.getNome())) {
-			ps.setString(index++, String.format("%%%s%%", seletor.getNome()));
+		if (seletor.possuiPaginacao()) {
+			int limite = seletor.getLimite();
+			int offset = limite * (seletor.getPagina() - 1); // Páginas iniciam em 1
+
+			ps.setInt(index++, offset);
+			ps.setInt(index++, limite);
 		}
 	}
 

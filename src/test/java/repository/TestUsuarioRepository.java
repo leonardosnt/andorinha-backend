@@ -135,5 +135,65 @@ public class TestUsuarioRepository {
 							.containsExactly("Usuário 3");
 	}
 
+	@Test
+	public void testa_paginacao() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
+
+		// Teste básico
+		UsuarioSeletor seletor = new UsuarioSeletor();
+		seletor.setLimite(5);
+		seletor.setPagina(1);
+
+		assertThat(seletor.possuiPaginacao());
+
+		assertThat(this.usuarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(5)
+			.extracting("id")
+			.containsExactly(1, 2, 3, 4, 5);
+
+		seletor.setPagina(2);
+
+		assertThat(this.usuarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(5)
+			.extracting("id")
+			.containsExactly(6, 7, 8, 9, 10);
+
+		// Página "não existe"
+		seletor = new UsuarioSeletor();
+		seletor.setLimite(10);
+		seletor.setPagina(100);
+
+		assertThat(seletor.possuiPaginacao());
+		assertThat(this.usuarioRepository.pesquisar(seletor)).isNotNull().hasSize(0);
+
+		// Página com menos items que o limite
+		seletor = new UsuarioSeletor();
+		seletor.setLimite(6);
+		seletor.setPagina(2);
+
+		assertThat(seletor.possuiPaginacao());
+		assertThat(this.usuarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(4);
+	}
+
+	@Test
+	public void testa_paginacao_com_filtro() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
+
+		UsuarioSeletor seletor = new UsuarioSeletor();
+		seletor.setLimite(5);
+		seletor.setPagina(1);
+		seletor.setId(7);
+
+		assertThat(seletor.possuiPaginacao());
+		assertThat(this.usuarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(1)
+			.extracting("id")
+			.containsExactly(7);
+	}
 
 }
