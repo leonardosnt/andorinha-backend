@@ -214,22 +214,17 @@ public class TestTweetRepository {
 
 		assertThat(this.tweetRepository.pesquisar(seletor))
 			.isNotNull()
-			.hasSize(5);
-
-			// TODO: Como a ordenação ainda não foi implementada,
-			// não dá para garantir o que será retornado pelo banco de dados.
-			//
-			// .extracting("id")
-			// .containsExactlyInAnyOrder(1, 2, 3, 4, 5);
+			.hasSize(5)
+			.extracting("id")
+			.containsExactlyInAnyOrder(1, 2, 3, 4, 5);
 
 		seletor.setPagina(2);
 
 		assertThat(this.tweetRepository.pesquisar(seletor))
 			.isNotNull()
-			.hasSize(5);
-
-			// .extracting("id")
-			// .containsExactlyInAnyOrder(6, 7, 8, 9, 10);
+			.hasSize(5)
+			.extracting("id")
+			.containsExactlyInAnyOrder(6, 7, 8, 9, 10);
 
 
 		// Página "não existe"
@@ -263,10 +258,12 @@ public class TestTweetRepository {
 		seletor.setIdUsuario(1);
 
 		assertThat(seletor.possuiPaginacao());
-		assertThat(this.tweetRepository.pesquisar(seletor)).isNotNull().hasSize(2);
+		assertThat(this.tweetRepository.pesquisar(seletor))
+			.isNotNull().hasSize(2).extracting("id").containsExactlyInAnyOrder(1, 9);
 
 		seletor.setPagina(2);
 
-		assertThat(this.tweetRepository.pesquisar(seletor)).isNotNull().hasSize(1);
+		assertThat(this.tweetRepository.pesquisar(seletor))
+			.isNotNull().hasSize(1).extracting("id").containsExactlyInAnyOrder(10);
 	}
 }

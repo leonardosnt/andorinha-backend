@@ -187,7 +187,8 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		}
 
 		if (seletor.possuiPaginacao()) {
-			sql.append(" OFFSET ? LIMIT ? ");
+			// Por padrão, os comentarios serão ordenados pelo id.
+			sql.append(" ORDER BY comentario.id OFFSET ? LIMIT ? ");
 		}
 	}
 

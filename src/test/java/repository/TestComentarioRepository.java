@@ -234,11 +234,13 @@ public class TestComentarioRepository {
 		seletor.setIdTweet(3);
 
 		assertThat(seletor.possuiPaginacao());
-		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(2);
+		assertThat(this.comentarioRepository.pesquisar(seletor))
+			.isNotNull().hasSize(2).extracting("id").containsExactly(7, 8);
 
 		seletor.setPagina(2);
 
-		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(2);
+		assertThat(this.comentarioRepository.pesquisar(seletor))
+			.isNotNull().hasSize(2).extracting("id").containsExactly(9, 10);
 	}
 
 }

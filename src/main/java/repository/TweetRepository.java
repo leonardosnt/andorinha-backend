@@ -182,7 +182,8 @@ public class TweetRepository extends AbstractCrudRepository {
 		}
 
 		if (seletor.possuiPaginacao()) {
-			sql.append(" OFFSET ? LIMIT ? ");
+			// Por padrão, os tweets serão ordenados pelo id.
+			sql.append(" ORDER BY tweet.id OFFSET ? LIMIT ? ");
 		}
 	}
 
