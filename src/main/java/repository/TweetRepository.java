@@ -152,55 +152,67 @@ public class TweetRepository extends AbstractCrudRepository {
 	}
 
 	private void adicionarFiltros(StringBuilder sql, TweetSeletor seletor) {
-		if (!seletor.possuiFiltro()) return;
+		if (seletor.possuiFiltro()) {
+			sql.append(" WHERE ");
 
-		sql.append(" WHERE ");
+			boolean primeiroFiltro = true;
 
-		boolean primeiroFiltro = true;
+			if (seletor.getId() != null) {
+				primeiroFiltro = false;
+				sql.append(" id = ? ");
+			}
 
-		if (seletor.getId() != null) {
-			primeiroFiltro = false;
-			sql.append(" id = ? ");
+			if (seletor.getIdUsuario() != null) {
+				if (!primeiroFiltro) sql.append(" AND ");
+				primeiroFiltro = false;
+				sql.append(" id_usuario = ? ");
+			}
+
+			if (!StringUtils.isBlank(seletor.getConteudo())) {
+				if (!primeiroFiltro) sql.append(" AND ");
+				primeiroFiltro = false;
+				sql.append(" conteudo LIKE ? ");
+			}
+
+			if (seletor.getData() != null) {
+				if (!primeiroFiltro) sql.append(" AND ");
+				primeiroFiltro = false;
+				sql.append(" data_postagem::date = ? ");
+			}
 		}
 
-		if (seletor.getIdUsuario() != null) {
-			if (!primeiroFiltro) sql.append(" AND ");
-			primeiroFiltro = false;
-			sql.append(" id_usuario = ? ");
-		}
-
-		if (!StringUtils.isBlank(seletor.getConteudo())) {
-			if (!primeiroFiltro) sql.append(" AND ");
-			primeiroFiltro = false;
-			sql.append(" conteudo LIKE ? ");
-		}
-
-		if (seletor.getData() != null) {
-			if (!primeiroFiltro) sql.append(" AND ");
-			primeiroFiltro = false;
-			sql.append(" data_postagem::date = ? ");
+		if (seletor.possuiPaginacao()) {
+			sql.append(" OFFSET ? LIMIT ? ");
 		}
 	}
 
 	private void adicionaParametros(PreparedStatement ps, TweetSeletor seletor) throws SQLException {
-		if (!seletor.possuiFiltro()) return;
-
 		int index = 1;
 
-		if (seletor.getId() != null) {
-			ps.setInt(index++, seletor.getId());
+		if (seletor.possuiFiltro()) {
+			if (seletor.getId() != null) {
+				ps.setInt(index++, seletor.getId());
+			}
+
+			if (seletor.getIdUsuario() != null) {
+				ps.setInt(index++, seletor.getIdUsuario());
+			}
+
+			if (!StringUtils.isBlank(seletor.getConteudo())) {
+				ps.setString(index++, String.format("%%%s%%", seletor.getConteudo()));
+			}
+
+			if (seletor.getData() != null) {
+				ps.setDate(index++, new Date(seletor.getData().getTimeInMillis()));
+			}
 		}
 
-		if (seletor.getIdUsuario() != null) {
-			ps.setInt(index++, seletor.getIdUsuario());
-		}
+		if (seletor.possuiPaginacao()) {
+			int limite = seletor.getLimite();
+			int offset = limite * (seletor.getPagina() - 1); // Páginas iniciam em 1
 
-		if (!StringUtils.isBlank(seletor.getConteudo())) {
-			ps.setString(index++, String.format("%%%s%%", seletor.getConteudo()));
-		}
-
-		if (seletor.getData() != null) {
-			ps.setDate(index++, new Date(seletor.getData().getTimeInMillis()));
+			ps.setInt(index++, offset);
+			ps.setInt(index++, limite);
 		}
 	}
 

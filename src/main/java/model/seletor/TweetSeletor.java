@@ -10,6 +10,10 @@ public class TweetSeletor {
 	private String conteudo;
 	private Calendar data;
 	private Integer idUsuario;
+
+	private int limite;
+	private int pagina;
+
 	public Integer getId() {
 		return id;
 	}
@@ -25,6 +29,12 @@ public class TweetSeletor {
 	public Calendar getData() {
 		return data;
 	}
+	public Integer getPagina() {
+		return pagina;
+	}
+	public Integer getLimite() {
+		return limite;
+	}
 	public void setData(Calendar data) {
 		this.data = data;
 	}
@@ -34,9 +44,18 @@ public class TweetSeletor {
 	public void setIdUsuario(Integer idUsuario) {
 		this.idUsuario = idUsuario;
 	}
+	public void setPagina(Integer pagina) {
+		this.pagina = pagina;
+	}
+	public void setLimite(Integer limite) {
+		this.limite = limite;
+	}
 	public boolean possuiFiltro() {
 		return id != null || idUsuario != null ||
 				data != null || !StringUtils.isBlank(conteudo);
+	}
+	public boolean possuiPaginacao() {
+		return limite > 0 && pagina > 0;
 	}
 
 }

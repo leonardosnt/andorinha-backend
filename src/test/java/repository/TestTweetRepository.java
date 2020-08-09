@@ -201,4 +201,72 @@ public class TestTweetRepository {
 		assertThat(this.tweetRepository.contar(seletor)).isEqualTo(0);
 	}
 
+	@Test
+	public void testa_paginacao() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
+
+		// Teste básico
+		TweetSeletor seletor = new TweetSeletor();
+		seletor.setLimite(5);
+		seletor.setPagina(1);
+
+		assertThat(seletor.possuiPaginacao());
+
+		assertThat(this.tweetRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(5);
+
+			// TODO: Como a ordenação ainda não foi implementada,
+			// não dá para garantir o que será retornado pelo banco de dados.
+			//
+			// .extracting("id")
+			// .containsExactlyInAnyOrder(1, 2, 3, 4, 5);
+
+		seletor.setPagina(2);
+
+		assertThat(this.tweetRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(5);
+
+			// .extracting("id")
+			// .containsExactlyInAnyOrder(6, 7, 8, 9, 10);
+
+
+		// Página "não existe"
+		seletor = new TweetSeletor();
+		seletor.setLimite(10);
+		seletor.setPagina(100);
+
+		assertThat(seletor.possuiPaginacao());
+		assertThat(this.tweetRepository.pesquisar(seletor)).isNotNull().hasSize(0);
+
+		// Página com menos items que o limite
+		seletor = new TweetSeletor();
+		seletor.setLimite(6);
+		seletor.setPagina(2);
+
+		assertThat(seletor.possuiPaginacao());
+		assertThat(this.tweetRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(4);
+	}
+
+	@Test
+	public void testa_paginacao_com_filtro() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
+
+		TweetSeletor seletor = new TweetSeletor();
+		seletor.setLimite(2);
+		seletor.setPagina(1);
+
+		// Este usuário possui 3 tweets
+		seletor.setIdUsuario(1);
+
+		assertThat(seletor.possuiPaginacao());
+		assertThat(this.tweetRepository.pesquisar(seletor)).isNotNull().hasSize(2);
+
+		seletor.setPagina(2);
+
+		assertThat(this.tweetRepository.pesquisar(seletor)).isNotNull().hasSize(1);
+	}
 }
