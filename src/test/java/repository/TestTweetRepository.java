@@ -15,8 +15,6 @@ import org.junit.runner.RunWith;
 
 import model.Tweet;
 import model.Usuario;
-import model.exceptions.ErroAoConectarNaBaseException;
-import model.exceptions.ErroAoConsultarBaseException;
 import model.seletor.TweetSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
@@ -41,7 +39,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_se_tweet_foi_inserido() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_se_tweet_foi_inserido() {
 		Usuario user = this.usuarioRepository.consultar(ID_USUARIO_CONSULTA);
 
 		Tweet tweet = new Tweet();
@@ -61,7 +59,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_consultar_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_consultar_tweet() {
 		Tweet tweet = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
 
 		assertThat( tweet ).isNotNull();
@@ -71,7 +69,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_alterar_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_alterar_tweet() {
 		Tweet tweet = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
 		tweet.setConteudo("Alterado!");
 
@@ -85,7 +83,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_remover_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_remover_tweet() {
 		Tweet tweet = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
 		assertThat( tweet ).isNotNull();
 
@@ -96,7 +94,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_listar_todos_os_tweets() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_listar_todos_os_tweets() {
 		List<Tweet> tweets = this.tweetRepository.listarTodos();
 
 		assertThat( tweets ).isNotNull()
@@ -114,7 +112,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_pesquisar_tweets() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_pesquisar_tweets() {
 		TweetSeletor seletor = new TweetSeletor();
 		seletor.setConteudo("Minha postagem de teste");
 		seletor.setIdUsuario(1);
@@ -135,7 +133,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_pesquisar_tweets_por_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_pesquisar_tweets_por_usuario() {
 		TweetSeletor seletor = new TweetSeletor();
 		seletor.setIdUsuario(2);
 
@@ -154,7 +152,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_pesquisar_tweets_por_conteudo() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_pesquisar_tweets_por_conteudo() {
 		TweetSeletor seletor = new TweetSeletor();
 		seletor.setConteudo("Minha postagem");
 
@@ -175,7 +173,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_contar_tweets() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_contar_tweets() {
 		TweetSeletor seletor = new TweetSeletor();
 		seletor.setConteudo("Minha postagem");
 		assertThat(this.tweetRepository.contar(seletor)).isEqualTo(3);
@@ -202,7 +200,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_paginacao() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_paginacao() {
 		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
 
 		// Teste básico
@@ -247,7 +245,7 @@ public class TestTweetRepository {
 	}
 
 	@Test
-	public void testa_paginacao_com_filtro() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_paginacao_com_filtro() {
 		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
 
 		TweetSeletor seletor = new TweetSeletor();

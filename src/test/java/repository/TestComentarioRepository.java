@@ -16,8 +16,6 @@ import org.junit.runner.RunWith;
 import model.Comentario;
 import model.Tweet;
 import model.Usuario;
-import model.exceptions.ErroAoConectarNaBaseException;
-import model.exceptions.ErroAoConsultarBaseException;
 import model.seletor.ComentarioSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
@@ -46,7 +44,7 @@ public class TestComentarioRepository {
 	}
 
 	@Test
-	public void testa_se_comentario_foi_inserido() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_se_comentario_foi_inserido() {
 		Usuario user = this.usuarioRepository.consultar(ID_USUARIO_CONSULTA);
 		Tweet tweet = this.tweetRepository.consultar(ID_TWEET_CONSULTA);
 
@@ -68,7 +66,7 @@ public class TestComentarioRepository {
 	}
 
 	@Test
-	public void testa_consultar_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_consultar_comentario() {
 		Comentario c =  this.comentarioRepository.consultar(ID_COMENTARIO_CONSULTA);
 
 		assertThat( c ).isNotNull();
@@ -80,7 +78,7 @@ public class TestComentarioRepository {
 	}
 
 	@Test
-	public void testa_alterar_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_alterar_comentario() {
 		Comentario c =  this.comentarioRepository.consultar(ID_COMENTARIO_CONSULTA);
 		c.setConteudo("Alterado!");
 
@@ -94,7 +92,7 @@ public class TestComentarioRepository {
 	}
 
 	@Test
-	public void testa_remover_comentario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_remover_comentario() {
 		Comentario c =  this.comentarioRepository.consultar(ID_COMENTARIO_CONSULTA);
 		assertThat( c ).isNotNull();
 
@@ -105,7 +103,7 @@ public class TestComentarioRepository {
 	}
 
 	@Test
-	public void testa_listar_todos_os_comentarios() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_listar_todos_os_comentarios() {
 		List<Comentario> comentarios = this.comentarioRepository.listarTodos();
 
 		assertThat( comentarios ).isNotNull()
@@ -124,7 +122,7 @@ public class TestComentarioRepository {
 	}
 
 	@Test
-	public void testa_pesquisar_comentarios_filtrado_por_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_pesquisar_comentarios_filtrado_por_tweet() {
 
 		ComentarioSeletor seletor = new ComentarioSeletor();
 		seletor.setIdTweet( 2 );
@@ -147,7 +145,7 @@ public class TestComentarioRepository {
 	}
 
 	@Test
-	public void testa_contar_comentarios() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_contar_comentarios() {
 		{
 			ComentarioSeletor seletor = new ComentarioSeletor();
 			seletor.setIdTweet(2);
@@ -187,7 +185,7 @@ public class TestComentarioRepository {
 	}
 
 	@Test
-	public void testa_paginacao() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_paginacao() {
 		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
 
 		// Teste básico
@@ -231,7 +229,7 @@ public class TestComentarioRepository {
 	}
 
 	@Test
-	public void testa_paginacao_com_filtro() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_paginacao_com_filtro() {
 		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
 
 		ComentarioSeletor seletor = new ComentarioSeletor();

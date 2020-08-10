@@ -14,8 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import model.Usuario;
-import model.exceptions.ErroAoConectarNaBaseException;
-import model.exceptions.ErroAoConsultarBaseException;
 import model.seletor.UsuarioSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
@@ -36,7 +34,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_se_usuario_foi_inserido() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_se_usuario_foi_inserido() {
 		Usuario user = new Usuario();
 		user.setNome("Usuario do Teste de Unidade");
 		this.usuarioRepository.inserir(user);
@@ -51,7 +49,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_consultar_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_consultar_usuario() {
 		Usuario user = this.usuarioRepository.consultar(ID_USUARIO_CONSULTA);
 
 		assertThat( user ).isNotNull();
@@ -60,7 +58,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_alterar_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_alterar_usuario() {
 		Usuario user = this.usuarioRepository.consultar(ID_USUARIO_CONSULTA);
 		user.setNome("Alterado!");
 
@@ -72,7 +70,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_remover_usuario() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_remover_usuario() {
 		Usuario user = this.usuarioRepository.consultar(ID_USUARIO_SEM_TWEET);
 		assertThat( user ).isNotNull();
 
@@ -83,7 +81,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_remover_usuario_inexistente() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_remover_usuario_inexistente() {
 		assertThat(this.usuarioRepository.consultar(ID_USUARIO_INEXISTENTE)).isNull();
 
 		this.usuarioRepository.remover(ID_USUARIO_INEXISTENTE);
@@ -92,13 +90,13 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_remover_usuario_com_tweet() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_remover_usuario_com_tweet() {
 		assertThatThrownBy(() -> { this.usuarioRepository.remover(ID_USUARIO_CONSULTA); })
 			.hasCauseInstanceOf(RollbackException.class);
 	}
 
 	@Test
-	public void testa_listar_todos_os_usuarios() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_listar_todos_os_usuarios() {
 		List<Usuario> usuarios = this.usuarioRepository.listarTodos();
 
 		assertThat( usuarios ).isNotNull()
@@ -110,7 +108,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_pesquisar_usuarios_por_nome() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_pesquisar_usuarios_por_nome() {
 		UsuarioSeletor seletor = new UsuarioSeletor();
 		seletor.setNome("Jo");
 		List<Usuario> usuarios = this.usuarioRepository.pesquisar(seletor);
@@ -123,7 +121,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_contar_usuarios_por_nome() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_contar_usuarios_por_nome() {
 		UsuarioSeletor seletor = new UsuarioSeletor();
 		seletor.setNome("Usuário");
 		Long total = this.usuarioRepository.contar(seletor);
@@ -133,7 +131,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_pesquisar_usuarios_por_id() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_pesquisar_usuarios_por_id() {
 		UsuarioSeletor seletor = new UsuarioSeletor();
 		seletor.setId(3);
 		List<Usuario> usuarios = this.usuarioRepository.pesquisar(seletor);
@@ -146,7 +144,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_paginacao() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_paginacao() {
 		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
 
 		// Teste básico
@@ -190,7 +188,7 @@ public class TestUsuarioRepository {
 	}
 
 	@Test
-	public void testa_paginacao_com_filtro() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public void testa_paginacao_com_filtro() {
 		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
 
 		UsuarioSeletor seletor = new UsuarioSeletor();
