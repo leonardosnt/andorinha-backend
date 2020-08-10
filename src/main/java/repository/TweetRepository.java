@@ -1,154 +1,63 @@
 package repository;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
 
 import model.Tweet;
-import model.Usuario;
-import model.exceptions.ErroAoConectarNaBaseException;
-import model.exceptions.ErroAoConsultarBaseException;
 import model.seletor.TweetSeletor;
 
 @Stateless
 public class TweetRepository extends AbstractCrudRepository {
 
-	public void inserir(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
-			int id = this.recuperarProximoValorDaSequence("seq_tweet");
-			tweet.setId(id);
+	public void inserir(Tweet tweet) {
+		tweet.setData(Calendar.getInstance());
+		em.persist(tweet);
+	}
 
-			PreparedStatement ps = c.prepareStatement("insert into tweet (id, conteudo, data_postagem, id_usuario) values (?, ?, ?, ?)");
-			ps.setInt(1, tweet.getId());
-			ps.setString(2, tweet.getConteudo());
-			ps.setTimestamp(3, new Timestamp(Calendar.getInstance().getTimeInMillis()));
-			ps.setInt(4, tweet.getUsuario().getId());
-			ps.execute();
-			ps.close();
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao inserir o tweet", e);
+	public void atualizar(Tweet tweet) {
+		tweet.setData(Calendar.getInstance());
+		em.merge(tweet);
+	}
+
+	public void remover(int id) {
+		Tweet tweet = consultar(id);
+		if (tweet != null) {
+			em.remove(tweet);
 		}
 	}
 
-	public void atualizar(Tweet tweet) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
-			PreparedStatement ps = c.prepareStatement("update tweet set conteudo = ?, data_postagem = ?, id_usuario = ? where id = ?");
-			ps.setString(1, tweet.getConteudo());
-			ps.setTimestamp(2, new Timestamp(Calendar.getInstance().getTimeInMillis()));
-			ps.setInt(3, tweet.getUsuario().getId());
-			ps.setInt(4, tweet.getId());
-			ps.execute();
-			ps.close();
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar o tweet", e);
-		}
+	public Tweet consultar(int id) {
+		return em.find(Tweet.class, id);
 	}
 
-	public void remover(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
-			PreparedStatement ps = c.prepareStatement("delete from tweet where id = ?");
-			ps.setInt(1, id);
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao remover o tweet", e);
-		}
-	}
-
-	public Tweet consultar(int id) throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
-		try (Connection c = this.abrirConexao()) {
-			String sql = "SELECT conteudo, data_postagem, id_usuario, nome FROM tweet"
-					+ " JOIN usuario ON usuario.id = id_usuario"
-					+ " WHERE tweet.id = ?";
-
-			PreparedStatement ps = c.prepareStatement(sql);
-			ps.setInt(1, id);
-
-			Tweet tweet = null;
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				tweet = new Tweet();
-				tweet.setId(id);
-				tweet.setConteudo(rs.getString("conteudo"));
-
-				Calendar dataTweet = new GregorianCalendar();
-				dataTweet.setTime(rs.getTimestamp("data_postagem"));
-				tweet.setData(dataTweet);
-
-				Usuario usuario = new Usuario();
-				usuario.setId(rs.getInt("id_usuario"));
-				usuario.setNome(rs.getString("nome"));
-
-				tweet.setUsuario(usuario);
-			}
-			ps.close();
-			rs.close();
-
-			return tweet;
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar o tweet", e);
-		}
-	}
-
-	public List<Tweet> listarTodos() throws ErroAoConectarNaBaseException, ErroAoConsultarBaseException {
+	public List<Tweet> listarTodos() {
 		return pesquisar(new TweetSeletor());
 	}
 
-	public List<Tweet> pesquisar(TweetSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
-		List<Tweet> tweets = new ArrayList<Tweet>();
+	@SuppressWarnings("unchecked")
+	public List<Tweet> pesquisar(TweetSeletor seletor) {
+		StringBuilder jpql = new StringBuilder("SELECT t FROM Tweet t");
+		adicionarFiltros(jpql, seletor);
 
-		try (Connection c = this.abrirConexao()) {
-			StringBuilder sql = new StringBuilder(
-					"SELECT tweet.id as id_tweet, conteudo, data_postagem, id_usuario, nome FROM tweet"
-					+ " JOIN usuario ON usuario.id = id_usuario");
-			adicionarFiltros(sql, seletor);
+		Query query = em.createQuery(jpql.toString());
+		adicionarParametros(query, seletor);
 
-			PreparedStatement ps = c.prepareStatement(sql.toString());
-			adicionaParametros(ps, seletor);
-
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				tweets.add(criarModel(rs));
-			}
-			ps.close();
-			rs.close();
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao atualizar o tweet", e);
-		}
-
-		return tweets;
+		return query.getResultList();
 	}
 
-	public Long contar(TweetSeletor seletor) throws ErroAoConsultarBaseException, ErroAoConectarNaBaseException {
-		try (Connection c = this.abrirConexao()) {
-			StringBuilder sql = new StringBuilder("SELECT count(*) as total FROM tweet");
-			adicionarFiltros(sql, seletor);
+	public Long contar(TweetSeletor seletor) {
+		StringBuilder jpql = new StringBuilder("SELECT COUNT(t) FROM Tweet t");
+		adicionarFiltros(jpql, seletor);
 
-			PreparedStatement ps = c.prepareStatement(sql.toString());
-			adicionaParametros(ps, seletor);
+		Query query = em.createQuery(jpql.toString());
+		adicionarParametros(query, seletor);
 
-			long total = 0;
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				total = rs.getLong("total");
-			}
-			rs.close();
-			ps.close();
-
-			return total;
-		} catch (SQLException e) {
-			throw new ErroAoConsultarBaseException("Ocorreu um erro ao contar os tweets", e);
-		}
+		return (Long) query.getSingleResult();
 	}
 
 	private void adicionarFiltros(StringBuilder sql, TweetSeletor seletor) {
@@ -159,52 +68,45 @@ public class TweetRepository extends AbstractCrudRepository {
 
 			if (seletor.getId() != null) {
 				primeiroFiltro = false;
-				sql.append(" id = ? ");
+				sql.append(" id = :id ");
 			}
 
 			if (seletor.getIdUsuario() != null) {
 				if (!primeiroFiltro) sql.append(" AND ");
 				primeiroFiltro = false;
-				sql.append(" id_usuario = ? ");
+				sql.append(" id_usuario = :id_usuario ");
 			}
 
 			if (!StringUtils.isBlank(seletor.getConteudo())) {
 				if (!primeiroFiltro) sql.append(" AND ");
 				primeiroFiltro = false;
-				sql.append(" conteudo LIKE ? ");
+				sql.append(" conteudo LIKE :conteudo ");
 			}
 
 			if (seletor.getData() != null) {
 				if (!primeiroFiltro) sql.append(" AND ");
 				primeiroFiltro = false;
-				sql.append(" data_postagem::date = ? ");
+				sql.append(" date(data_postagem) = :data_postagem ");
 			}
-		}
-
-		if (seletor.possuiPaginacao()) {
-			// Por padrão, os tweets serão ordenados pelo id.
-			sql.append(" ORDER BY tweet.id OFFSET ? LIMIT ? ");
 		}
 	}
 
-	private void adicionaParametros(PreparedStatement ps, TweetSeletor seletor) throws SQLException {
-		int index = 1;
-
+	private void adicionarParametros(Query query, TweetSeletor seletor) {
 		if (seletor.possuiFiltro()) {
 			if (seletor.getId() != null) {
-				ps.setInt(index++, seletor.getId());
+				query.setParameter("id", seletor.getId());
 			}
 
 			if (seletor.getIdUsuario() != null) {
-				ps.setInt(index++, seletor.getIdUsuario());
+				query.setParameter("id_usuario", seletor.getIdUsuario());
 			}
 
 			if (!StringUtils.isBlank(seletor.getConteudo())) {
-				ps.setString(index++, String.format("%%%s%%", seletor.getConteudo()));
+				query.setParameter("conteudo", String.format("%%%s%%", seletor.getConteudo()));
 			}
 
 			if (seletor.getData() != null) {
-				ps.setDate(index++, new Date(seletor.getData().getTimeInMillis()));
+				query.setParameter("data_postagem", seletor.getData());
 			}
 		}
 
@@ -212,26 +114,8 @@ public class TweetRepository extends AbstractCrudRepository {
 			int limite = seletor.getLimite();
 			int offset = limite * (seletor.getPagina() - 1); // Páginas iniciam em 1
 
-			ps.setInt(index++, offset);
-			ps.setInt(index++, limite);
+			query.setFirstResult(offset);
+			query.setMaxResults(limite);
 		}
-	}
-
-	private Tweet criarModel(ResultSet rs) throws SQLException {
-		Tweet tweet = new Tweet();
-		tweet.setId(rs.getInt("id_tweet"));
-		tweet.setConteudo(rs.getString("conteudo"));
-
-		Calendar dataTweet = new GregorianCalendar();
-		dataTweet.setTime(rs.getTimestamp("data_postagem"));
-		tweet.setData(dataTweet);
-
-		Usuario usuario = new Usuario();
-		usuario.setId(rs.getInt("id_usuario"));
-		usuario.setNome(rs.getString("nome"));
-
-		tweet.setUsuario(usuario);
-
-		return tweet;
 	}
 }
