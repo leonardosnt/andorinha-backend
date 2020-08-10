@@ -89,6 +89,11 @@ public class TweetRepository extends AbstractCrudRepository {
 				sql.append(" date(data_postagem) = :data_postagem ");
 			}
 		}
+
+		if (seletor.possuiPaginacao()) {
+			// Por padrão, ordena pelo id na paginação.
+			sql.append(" ORDER BY id ");
+		}
 	}
 
 	private void adicionarParametros(Query query, TweetSeletor seletor) {

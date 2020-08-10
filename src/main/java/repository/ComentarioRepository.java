@@ -95,6 +95,11 @@ public class ComentarioRepository extends AbstractCrudRepository {
 				jpql.append(" date(data_postagem) = :data_postagem ");
 			}
 		}
+
+		if (seletor.possuiPaginacao()) {
+			// Por padrão, ordena pelo id na paginação.
+			jpql.append(" ORDER BY id ");
+		}
 	}
 
 	private void adicionarParametros(Query query, ComentarioSeletor seletor) {

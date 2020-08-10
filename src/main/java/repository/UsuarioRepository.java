@@ -73,6 +73,11 @@ public class UsuarioRepository extends AbstractCrudRepository {
 				sql.append("nome LIKE :nome ");
 			}
 		}
+
+		if (seletor.possuiPaginacao()) {
+			// Por padrão, ordena pelo id na paginação.
+			sql.append(" ORDER BY id ");
+		}
 	}
 
 	private void adicionarParametros(Query query, UsuarioSeletor seletor) {
