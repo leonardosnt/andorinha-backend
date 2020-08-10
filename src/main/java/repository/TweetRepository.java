@@ -41,7 +41,7 @@ public class TweetRepository extends AbstractCrudRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<Tweet> pesquisar(TweetSeletor seletor) {
-		StringBuilder jpql = new StringBuilder("SELECT t FROM Tweet t");
+		StringBuilder jpql = new StringBuilder("SELECT t FROM Tweet t INNER JOIN FETCH t.usuario");
 		adicionarFiltros(jpql, seletor);
 
 		Query query = em.createQuery(jpql.toString());
@@ -68,31 +68,31 @@ public class TweetRepository extends AbstractCrudRepository {
 
 			if (seletor.getId() != null) {
 				primeiroFiltro = false;
-				sql.append(" id = :id ");
+				sql.append(" t.id = :id ");
 			}
 
 			if (seletor.getIdUsuario() != null) {
 				if (!primeiroFiltro) sql.append(" AND ");
 				primeiroFiltro = false;
-				sql.append(" id_usuario = :id_usuario ");
+				sql.append(" t.usuario.id = :id_usuario ");
 			}
 
 			if (!StringUtils.isBlank(seletor.getConteudo())) {
 				if (!primeiroFiltro) sql.append(" AND ");
 				primeiroFiltro = false;
-				sql.append(" conteudo LIKE :conteudo ");
+				sql.append(" t.conteudo LIKE :conteudo ");
 			}
 
 			if (seletor.getData() != null) {
 				if (!primeiroFiltro) sql.append(" AND ");
 				primeiroFiltro = false;
-				sql.append(" date(data_postagem) = :data_postagem ");
+				sql.append(" date(t.data) = :data_postagem ");
 			}
 		}
 
 		if (seletor.possuiPaginacao()) {
 			// Por padrão, ordena pelo id na paginação.
-			sql.append(" ORDER BY id ");
+			sql.append(" ORDER BY t.id ");
 		}
 	}
 

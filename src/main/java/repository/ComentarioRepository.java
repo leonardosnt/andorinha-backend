@@ -41,7 +41,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<Comentario> pesquisar(ComentarioSeletor seletor) {
-		StringBuilder jpql = new StringBuilder("SELECT c FROM Comentario c");
+		StringBuilder jpql = new StringBuilder("SELECT c FROM Comentario c INNER JOIN FETCH c.usuario INNER JOIN FETCH c.tweet t INNER JOIN FETCH t.usuario");
 		adicionarFiltros(jpql, seletor);
 
 		Query query = em.createQuery(jpql.toString());
@@ -68,37 +68,37 @@ public class ComentarioRepository extends AbstractCrudRepository {
 
 			if (seletor.getId() != null) {
 				primeiroFiltro = false;
-				jpql.append(" id = :id ");
+				jpql.append(" c.id = :id ");
 			}
 
 			if (seletor.getIdTweet() != null) {
 				if (!primeiroFiltro) jpql.append(" AND ");
 				primeiroFiltro = false;
-				jpql.append(" id_tweet = :id_tweet ");
+				jpql.append(" c.tweet.id = :id_tweet ");
 			}
 
 			if (seletor.getIdUsuario() != null) {
 				if (!primeiroFiltro) jpql.append(" AND ");
 				primeiroFiltro = false;
-				jpql.append(" id_usuario = :id_usuario ");
+				jpql.append(" c.usuario.id = :id_usuario ");
 			}
 
 			if (!StringUtils.isBlank(seletor.getConteudo())) {
 				if (!primeiroFiltro) jpql.append(" AND ");
 				primeiroFiltro = false;
-				jpql.append(" conteudo LIKE :conteudo ");
+				jpql.append(" c.conteudo LIKE :conteudo ");
 			}
 
 			if (seletor.getData() != null) {
 				if (!primeiroFiltro) jpql.append(" AND ");
 				primeiroFiltro = false;
-				jpql.append(" date(data_postagem) = :data_postagem ");
+				jpql.append(" date(c.data) = :data_postagem ");
 			}
 		}
 
 		if (seletor.possuiPaginacao()) {
 			// Por padrão, ordena pelo id na paginação.
-			jpql.append(" ORDER BY id ");
+			jpql.append(" ORDER BY c.id ");
 		}
 	}
 

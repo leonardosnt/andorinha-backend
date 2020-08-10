@@ -64,19 +64,19 @@ public class UsuarioRepository extends AbstractCrudRepository {
 			boolean primeiroFiltro = true;
 			if (seletor.getId() != null) {
 				primeiroFiltro = false;
-				sql.append("id = :id ");
+				sql.append("u.id = :id ");
 			}
 			if (!StringUtils.isBlank(seletor.getNome())) {
 				if (!primeiroFiltro) {
 					sql.append("AND ");
 				}
-				sql.append("nome LIKE :nome ");
+				sql.append("u.nome LIKE :nome ");
 			}
 		}
 
 		if (seletor.possuiPaginacao()) {
 			// Por padrão, ordena pelo id na paginação.
-			sql.append(" ORDER BY id ");
+			sql.append(" ORDER BY u.id ");
 		}
 	}
 
