@@ -3,28 +3,28 @@
 BEGIN TRANSACTION;
 
 CREATE TABLE usuario (
-    id INTEGER,
+    id INTEGER NOT NULL,
     nome VARCHAR NOT NULL,
 
     CONSTRAINT pk_usuario PRIMARY KEY (id)
 );
 
 CREATE TABLE tweet (
-    id INTEGER,
+    id INTEGER NOT NULL,
     conteudo VARCHAR NOT NULL,
     data_postagem TIMESTAMP NOT NULL,
-    id_usuario INTEGER,
+    id_usuario INTEGER NOT NULL,
 
     CONSTRAINT pk_tweet PRIMARY KEY (id),
     CONSTRAINT fk_tweet_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id) ON DELETE RESTRICT
 );
 
 CREATE TABLE comentario (
-    id INTEGER,
+    id INTEGER NOT NULL,
     conteudo VARCHAR NOT NULL,
     data_postagem TIMESTAMP NOT NULL,
-    id_usuario INTEGER,
-    id_tweet INTEGER,
+    id_usuario INTEGER NOT NULL,
+    id_tweet INTEGER NOT NULL,
 
     CONSTRAINT pk_comentario PRIMARY KEY (id),
     CONSTRAINT fk_comentario_usuario FOREIGN KEY (id_usuario) REFERENCES usuario (id) ON DELETE RESTRICT,
