@@ -7,7 +7,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ejb.EJB;
-
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +18,7 @@ import model.Usuario;
 import model.seletor.ComentarioSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
+import runner.UpdateSequenceOperation;
 
 @RunWith(AndorinhaTestRunner.class)
 public class TestComentarioRepository {
@@ -40,7 +40,8 @@ public class TestComentarioRepository {
 
 	@Before
 	public void setUp() {
-		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml", DatabaseOperation.CLEAN_INSERT);
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml",
+				new UpdateSequenceOperation(DatabaseOperation.CLEAN_INSERT));
 	}
 
 	@Test

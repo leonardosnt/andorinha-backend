@@ -18,6 +18,7 @@ import model.Usuario;
 import model.seletor.TweetSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
+import runner.UpdateSequenceOperation;
 
 @RunWith(AndorinhaTestRunner.class)
 public class TestTweetRepository {
@@ -35,7 +36,8 @@ public class TestTweetRepository {
 
 	@Before
 	public void setUp() {
-		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml", DatabaseOperation.CLEAN_INSERT);
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml",
+				new UpdateSequenceOperation(DatabaseOperation.CLEAN_INSERT));
 	}
 
 	@Test
