@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,12 +40,11 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		return pesquisar(new ComentarioSeletor());
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Comentario> pesquisar(ComentarioSeletor seletor) {
 		StringBuilder jpql = new StringBuilder("SELECT c FROM Comentario c INNER JOIN FETCH c.usuario INNER JOIN FETCH c.tweet t INNER JOIN FETCH t.usuario");
 		adicionarFiltros(jpql, seletor);
 
-		Query query = em.createQuery(jpql.toString());
+		TypedQuery<Comentario> query = em.createQuery(jpql.toString(), Comentario.class);
 		adicionarParametros(query, seletor);
 
 		return query.getResultList();
@@ -54,10 +54,10 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		StringBuilder jpql = new StringBuilder("SELECT COUNT(c) FROM Comentario c");
 		adicionarFiltros(jpql, seletor);
 
-		Query query = em.createQuery(jpql.toString());
+		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
 		adicionarParametros(query, seletor);
 
-		return (Long) query.getSingleResult();
+		return query.getSingleResult();
 	}
 
 	private void adicionarFiltros(StringBuilder jpql, ComentarioSeletor seletor) {
