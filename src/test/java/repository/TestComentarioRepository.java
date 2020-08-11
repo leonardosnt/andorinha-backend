@@ -113,7 +113,7 @@ public class TestComentarioRepository {
 							.containsExactlyInAnyOrder("Comentário 1", "Comentário 2", "Comentário 3", "Comentário 4", "Comentário 5",
 														"Comentário 6", "Comentário 7", "Comentário 8", "Comentário 9", "Comentário 10");
 
-		comentarios.stream().forEach(t -> {
+		comentarios.forEach(t -> {
 			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
 			assertThat(t.getUsuario()).isNotNull();
 			assertThat(t.getTweet()).isNotNull();
@@ -136,7 +136,7 @@ public class TestComentarioRepository {
 							.extracting("conteudo")
 							.containsExactly("Comentário 5");
 
-		comentarios.stream().forEach(t -> {
+		comentarios.forEach(t -> {
 			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
 			assertThat(t.getUsuario()).isNotNull();
 			assertThat(t.getTweet()).isNotNull();
@@ -173,12 +173,12 @@ public class TestComentarioRepository {
 			seletor.setIdUsuario(4);
 			seletor.setIdTweet(1);
 			seletor.setConteudo("Comentário 1" );
-			seletor.setData(new GregorianCalendar(2020, 5, 1));
+			seletor.setData(new GregorianCalendar(2020, Calendar.JUNE, 1));
 
 			long total = this.comentarioRepository.contar(seletor);
 			assertThat(total).isEqualTo(1);
 
-			seletor.setData(new GregorianCalendar(2020, 5, 5));
+			seletor.setData(new GregorianCalendar(2020, Calendar.JUNE, 5));
 
 			assertThat(this.comentarioRepository.contar(seletor)).isEqualTo(0);
 		}
@@ -193,7 +193,7 @@ public class TestComentarioRepository {
 		seletor.setLimite(5);
 		seletor.setPagina(1);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 
 		assertThat(this.comentarioRepository.pesquisar(seletor))
 			.isNotNull()
@@ -214,7 +214,7 @@ public class TestComentarioRepository {
 		seletor.setLimite(10);
 		seletor.setPagina(100);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 		assertThat(this.comentarioRepository.pesquisar(seletor)).isNotNull().hasSize(0);
 
 		// Página com menos items que o limite
@@ -222,7 +222,7 @@ public class TestComentarioRepository {
 		seletor.setLimite(6);
 		seletor.setPagina(2);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 		assertThat(this.comentarioRepository.pesquisar(seletor))
 			.isNotNull()
 			.hasSize(4);
@@ -239,7 +239,7 @@ public class TestComentarioRepository {
 		// Este tweet possui 4 comentarios
 		seletor.setIdTweet(3);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 		assertThat(this.comentarioRepository.pesquisar(seletor))
 			.isNotNull().hasSize(2).extracting("id").containsExactly(7, 8);
 

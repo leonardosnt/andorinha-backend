@@ -91,7 +91,7 @@ public class TestUsuarioRepository {
 
 	@Test
 	public void testa_remover_usuario_com_tweet() {
-		assertThatThrownBy(() -> { this.usuarioRepository.remover(ID_USUARIO_CONSULTA); })
+		assertThatThrownBy(() -> this.usuarioRepository.remover(ID_USUARIO_CONSULTA))
 			.hasCauseInstanceOf(RollbackException.class);
 	}
 
@@ -152,7 +152,7 @@ public class TestUsuarioRepository {
 		seletor.setLimite(5);
 		seletor.setPagina(1);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 
 		assertThat(this.usuarioRepository.pesquisar(seletor))
 			.isNotNull()
@@ -173,7 +173,7 @@ public class TestUsuarioRepository {
 		seletor.setLimite(10);
 		seletor.setPagina(100);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 		assertThat(this.usuarioRepository.pesquisar(seletor)).isNotNull().hasSize(0);
 
 		// Página com menos items que o limite
@@ -181,7 +181,7 @@ public class TestUsuarioRepository {
 		seletor.setLimite(6);
 		seletor.setPagina(2);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 		assertThat(this.usuarioRepository.pesquisar(seletor))
 			.isNotNull()
 			.hasSize(4);
@@ -196,7 +196,7 @@ public class TestUsuarioRepository {
 		seletor.setPagina(1);
 		seletor.setId(7);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 		assertThat(this.usuarioRepository.pesquisar(seletor))
 			.isNotNull()
 			.hasSize(1)
