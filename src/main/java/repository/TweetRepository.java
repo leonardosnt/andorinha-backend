@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,12 +40,11 @@ public class TweetRepository extends AbstractCrudRepository {
 		return pesquisar(new TweetSeletor());
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Tweet> pesquisar(TweetSeletor seletor) {
 		StringBuilder jpql = new StringBuilder("SELECT t FROM Tweet t INNER JOIN FETCH t.usuario");
 		adicionarFiltros(jpql, seletor);
 
-		Query query = em.createQuery(jpql.toString());
+		TypedQuery<Tweet> query = em.createQuery(jpql.toString(), Tweet.class);
 		adicionarParametros(query, seletor);
 
 		return query.getResultList();
@@ -54,10 +54,10 @@ public class TweetRepository extends AbstractCrudRepository {
 		StringBuilder jpql = new StringBuilder("SELECT COUNT(t) FROM Tweet t");
 		adicionarFiltros(jpql, seletor);
 
-		Query query = em.createQuery(jpql.toString());
+		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
 		adicionarParametros(query, seletor);
 
-		return (Long) query.getSingleResult();
+		return query.getSingleResult();
 	}
 
 	private void adicionarFiltros(StringBuilder sql, TweetSeletor seletor) {

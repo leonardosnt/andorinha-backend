@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,12 +37,11 @@ public class UsuarioRepository extends AbstractCrudRepository {
 		return pesquisar(new UsuarioSeletor());
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Usuario> pesquisar(UsuarioSeletor seletor) {
 		StringBuilder jpql = new StringBuilder("SELECT u FROM Usuario u");
 		adicionarFiltros(jpql, seletor);
 
-		Query query = em.createQuery(jpql.toString());
+		TypedQuery<Usuario> query = em.createQuery(jpql.toString(), Usuario.class);
 		adicionarParametros(query, seletor);
 
 		return query.getResultList();
@@ -51,10 +51,10 @@ public class UsuarioRepository extends AbstractCrudRepository {
 		StringBuilder jpql = new StringBuilder("SELECT COUNT(u) FROM Usuario u");
 		adicionarFiltros(jpql, seletor);
 
-		Query query = em.createQuery(jpql.toString());
+		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
 		adicionarParametros(query, seletor);
 
-		return (Long) query.getSingleResult();
+		return query.getSingleResult();
 	}
 
 	private void adicionarFiltros(StringBuilder sql, UsuarioSeletor seletor) {

@@ -18,6 +18,7 @@ import model.Usuario;
 import model.seletor.TweetSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
+import runner.UpdateSequenceOperation;
 
 @RunWith(AndorinhaTestRunner.class)
 public class TestTweetRepository {
@@ -35,7 +36,8 @@ public class TestTweetRepository {
 
 	@Before
 	public void setUp() {
-		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml", DatabaseOperation.CLEAN_INSERT);
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/andorinha.xml",
+				new UpdateSequenceOperation(DatabaseOperation.CLEAN_INSERT));
 	}
 
 	@Test
@@ -105,7 +107,7 @@ public class TestTweetRepository {
 														"Minha postagem de teste 2",
 														"Minha postagem de teste 3");
 
-		tweets.stream().forEach(t -> {
+		tweets.forEach(t -> {
 			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
 			assertThat(t.getUsuario()).isNotNull();
 		});
@@ -116,7 +118,7 @@ public class TestTweetRepository {
 		TweetSeletor seletor = new TweetSeletor();
 		seletor.setConteudo("Minha postagem de teste");
 		seletor.setIdUsuario(1);
-		seletor.setData(new GregorianCalendar(2020, 3, 8));
+		seletor.setData(new GregorianCalendar(2020, Calendar.APRIL, 8));
 
 		List<Tweet> tweets = this.tweetRepository.pesquisar(seletor);
 
@@ -126,7 +128,7 @@ public class TestTweetRepository {
 			.extracting("conteudo")
 			.containsExactly("Minha postagem de teste");
 
-		tweets.stream().forEach(t -> {
+		tweets.forEach(t -> {
 			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
 			assertThat(t.getUsuario()).isNotNull();
 		});
@@ -145,7 +147,7 @@ public class TestTweetRepository {
 			.extracting("conteudo")
 			.containsExactly("Minha postagem de teste 2");
 
-		tweets.stream().forEach(t -> {
+		tweets.forEach(t -> {
 			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
 			assertThat(t.getUsuario()).isNotNull();
 		});
@@ -166,7 +168,7 @@ public class TestTweetRepository {
 					"Minha postagem de teste 2",
 					"Minha postagem de teste 3");
 
-		tweets.stream().forEach(t -> {
+		tweets.forEach(t -> {
 			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
 			assertThat(t.getUsuario()).isNotNull();
 		});
@@ -189,12 +191,12 @@ public class TestTweetRepository {
 		seletor = new TweetSeletor();
 		seletor.setIdUsuario(2);
 		seletor.setConteudo("Minha postagem de teste 2");
-		seletor.setData(new GregorianCalendar(2020, 4, 9));
+		seletor.setData(new GregorianCalendar(2020, Calendar.MAY, 9));
 
 		assertThat(this.tweetRepository.contar(seletor)).isEqualTo(1);
 
 		seletor = new TweetSeletor();
-		seletor.setData(new GregorianCalendar(2020, 10, 20));
+		seletor.setData(new GregorianCalendar(2020, Calendar.NOVEMBER, 20));
 
 		assertThat(this.tweetRepository.contar(seletor)).isEqualTo(0);
 	}
@@ -208,7 +210,7 @@ public class TestTweetRepository {
 		seletor.setLimite(5);
 		seletor.setPagina(1);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 
 		assertThat(this.tweetRepository.pesquisar(seletor))
 			.isNotNull()
@@ -230,7 +232,7 @@ public class TestTweetRepository {
 		seletor.setLimite(10);
 		seletor.setPagina(100);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 		assertThat(this.tweetRepository.pesquisar(seletor)).isNotNull().hasSize(0);
 
 		// Página com menos items que o limite
@@ -238,7 +240,7 @@ public class TestTweetRepository {
 		seletor.setLimite(6);
 		seletor.setPagina(2);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 		assertThat(this.tweetRepository.pesquisar(seletor))
 			.isNotNull()
 			.hasSize(4);
@@ -255,7 +257,7 @@ public class TestTweetRepository {
 		// Este usuário possui 3 tweets
 		seletor.setIdUsuario(1);
 
-		assertThat(seletor.possuiPaginacao());
+		assertThat(seletor.possuiPaginacao()).isTrue();
 		assertThat(this.tweetRepository.pesquisar(seletor))
 			.isNotNull().hasSize(2).extracting("id").containsExactlyInAnyOrder(1, 9);
 
