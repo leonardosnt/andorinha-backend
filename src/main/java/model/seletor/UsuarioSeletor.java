@@ -1,5 +1,7 @@
 package model.seletor;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class UsuarioSeletor {
 
 	private Integer id;
@@ -9,8 +11,7 @@ public class UsuarioSeletor {
 	private int pagina;
 
 	public boolean possuiFiltro() {
-		return this.id != null ||
-				(this.nome != null && !this.nome.trim().isEmpty() );
+		return this.id != null || !StringUtils.isBlank(this.nome);
 	}
 
 	public boolean possuiPaginacao() {
@@ -20,12 +21,15 @@ public class UsuarioSeletor {
 	public Integer getId() {
 		return this.id;
 	}
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
 	public String getNome() {
 		return this.nome;
 	}
+
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
