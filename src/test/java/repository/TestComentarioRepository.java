@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ejb.EJB;
+
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.junit.runner.RunWith;
 import model.Comentario;
 import model.Tweet;
 import model.Usuario;
+import model.dto.ComentarioDTO;
 import model.seletor.ComentarioSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
@@ -143,6 +145,31 @@ public class TestComentarioRepository {
 			assertThat(t.getTweet()).isNotNull();
 			assertThat(t.getTweet().getUsuario()).isNotNull();
 		});
+	}
+
+	@Test
+	public void testa_pesquisar_comentarios_filtrado_por_tweet_DTO() {
+		ComentarioSeletor seletor = new ComentarioSeletor();
+		seletor.setIdTweet( 2 );
+
+		List<ComentarioDTO> comentarios = this.comentarioRepository.pesquisarDTO( seletor );
+
+		assertThat( comentarios )
+			.isNotNull()
+			.isNotEmpty()
+			.hasSize( 2 );
+
+		assertThat( comentarios )
+			.extracting( "conteudo" )
+			.containsExactlyInAnyOrder( "Comentário 5", "Comentário 6" );
+
+		assertThat( comentarios )
+			.extracting( "idUsuario" )
+			.containsExactlyInAnyOrder( 4, 1 );
+
+		assertThat( comentarios )
+			.extracting( "idTweet" )
+			.containsExactlyInAnyOrder( 2, 2 );
 	}
 
 	@Test

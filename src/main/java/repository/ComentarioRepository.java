@@ -10,6 +10,7 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 
 import model.Comentario;
+import model.dto.ComentarioDTO;
 import model.seletor.ComentarioSeletor;
 
 @Stateless
@@ -45,6 +46,20 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		adicionarFiltros(jpql, seletor);
 
 		TypedQuery<Comentario> query = super.em.createQuery(jpql.toString(), Comentario.class);
+		adicionarParametros(query, seletor);
+
+		return query.getResultList();
+	}
+
+	public List<ComentarioDTO> pesquisarDTO(ComentarioSeletor seletor) {
+		StringBuilder jpql = new StringBuilder("SELECT new model.dto.ComentarioDTO(c.id, t.id, u.id, u.nome, c.data, c.conteudo) ");
+		jpql.append("FROM Comentario c ");
+		jpql.append("INNER JOIN c.usuario u ");
+		jpql.append("INNER JOIN c.tweet t ");
+		jpql.append("INNER JOIN t.usuario ");
+		adicionarFiltros(jpql, seletor);
+
+		TypedQuery<ComentarioDTO> query = super.em.createQuery(jpql.toString(), ComentarioDTO.class);
 		adicionarParametros(query, seletor);
 
 		return query.getResultList();
