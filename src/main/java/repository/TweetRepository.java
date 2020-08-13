@@ -10,6 +10,7 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 
 import model.Tweet;
+import model.dto.TweetDTO;
 import model.seletor.TweetSeletor;
 
 @Stateless
@@ -45,6 +46,16 @@ public class TweetRepository extends AbstractCrudRepository {
 		adicionarFiltros(jpql, seletor);
 
 		TypedQuery<Tweet> query = super.em.createQuery(jpql.toString(), Tweet.class);
+		adicionarParametros(query, seletor);
+
+		return query.getResultList();
+	}
+
+	public List<TweetDTO> pesquisarDTO(TweetSeletor seletor) {
+		StringBuilder jpql = new StringBuilder("SELECT new model.dto.TweetDTO(t.id, u.id, u.nome, t.data, t.conteudo) FROM Tweet t INNER JOIN t.usuario u");
+		adicionarFiltros(jpql, seletor);
+
+		TypedQuery<TweetDTO> query = super.em.createQuery(jpql.toString(), TweetDTO.class);
 		adicionarParametros(query, seletor);
 
 		return query.getResultList();

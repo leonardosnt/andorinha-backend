@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import model.Tweet;
 import model.Usuario;
+import model.dto.TweetDTO;
 import model.seletor.TweetSeletor;
 import runner.AndorinhaTestRunner;
 import runner.DatabaseHelper;
@@ -172,6 +173,20 @@ public class TestTweetRepository {
 			assertThat(t.getData()).isNotNull().isLessThan(Calendar.getInstance());
 			assertThat(t.getUsuario()).isNotNull();
 		});
+	}
+
+	@Test
+	public void testa_pesquisar_tweets_por_usuario_DTO() {
+		TweetSeletor seletor = new TweetSeletor();
+		seletor.setIdUsuario(2);
+
+		List<TweetDTO> tweets = this.tweetRepository.pesquisarDTO(seletor);
+
+		assertThat(tweets).isNotNull()
+			.isNotEmpty()
+			.hasSize(1)
+			.extracting("conteudo")
+			.containsExactlyInAnyOrder("Minha postagem de teste 2");
 	}
 
 	@Test
