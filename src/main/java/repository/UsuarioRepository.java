@@ -15,22 +15,22 @@ import model.seletor.UsuarioSeletor;
 public class UsuarioRepository extends AbstractCrudRepository {
 
 	public void inserir(Usuario usuario) {
-		em.persist(usuario);
+		super.em.persist(usuario);
 	}
 
 	public void atualizar(Usuario usuario) {
-		em.merge(usuario);
+		super.em.merge(usuario);
 	}
 
 	public void remover(int id) {
 		Usuario usuario = consultar(id);
 		if (usuario != null) {
-			em.remove(usuario);
+			super.em.remove(usuario);
 		}
 	}
 
 	public Usuario consultar(int id) {
-		return em.find(Usuario.class, id);
+		return super.em.find(Usuario.class, id);
 	}
 
 	public List<Usuario> listarTodos() {
@@ -41,7 +41,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 		StringBuilder jpql = new StringBuilder("SELECT u FROM Usuario u");
 		adicionarFiltros(jpql, seletor);
 
-		TypedQuery<Usuario> query = em.createQuery(jpql.toString(), Usuario.class);
+		TypedQuery<Usuario> query = super.em.createQuery(jpql.toString(), Usuario.class);
 		adicionarParametros(query, seletor);
 
 		return query.getResultList();
@@ -51,7 +51,7 @@ public class UsuarioRepository extends AbstractCrudRepository {
 		StringBuilder jpql = new StringBuilder("SELECT COUNT(u) FROM Usuario u");
 		adicionarFiltros(jpql, seletor);
 
-		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		TypedQuery<Long> query = super.em.createQuery(jpql.toString(), Long.class);
 		adicionarParametros(query, seletor);
 
 		return query.getSingleResult();

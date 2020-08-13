@@ -26,14 +26,14 @@ public class UsuarioService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Usuario> listarTodos() {
-		return usuarioRepository.listarTodos();
+		return this.usuarioRepository.listarTodos();
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Usuario inserir(Usuario usuario) {
-		usuarioRepository.inserir(usuario);
+		this.usuarioRepository.inserir(usuario);
 		return usuario;
 	}
 
@@ -41,21 +41,21 @@ public class UsuarioService {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Usuario consultar(@PathParam("id") Integer id) {
-		return usuarioRepository.consultar(id);
+		return this.usuarioRepository.consultar(id);
 	}
 
 	@DELETE
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public void remover(@PathParam("id") Integer id) {
-		usuarioRepository.remover(id);
+		this.usuarioRepository.remover(id);
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public void atualizar(Usuario usuario) {
-		usuarioRepository.atualizar(usuario);
+		this.usuarioRepository.atualizar(usuario);
 	}
 
 	@POST
@@ -63,7 +63,7 @@ public class UsuarioService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Usuario> pesquisar(UsuarioSeletor seletor) {
-		return usuarioRepository.pesquisar(seletor);
+		return this.usuarioRepository.pesquisar(seletor);
 	}
 
 }

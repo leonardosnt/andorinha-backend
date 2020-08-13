@@ -17,23 +17,23 @@ public class TweetRepository extends AbstractCrudRepository {
 
 	public void inserir(Tweet tweet) {
 		tweet.setData(Calendar.getInstance());
-		em.persist(tweet);
+		super.em.persist(tweet);
 	}
 
 	public void atualizar(Tweet tweet) {
 		tweet.setData(Calendar.getInstance());
-		em.merge(tweet);
+		super.em.merge(tweet);
 	}
 
 	public void remover(int id) {
 		Tweet tweet = consultar(id);
 		if (tweet != null) {
-			em.remove(tweet);
+			super.em.remove(tweet);
 		}
 	}
 
 	public Tweet consultar(int id) {
-		return em.find(Tweet.class, id);
+		return super.em.find(Tweet.class, id);
 	}
 
 	public List<Tweet> listarTodos() {
@@ -44,7 +44,7 @@ public class TweetRepository extends AbstractCrudRepository {
 		StringBuilder jpql = new StringBuilder("SELECT t FROM Tweet t INNER JOIN FETCH t.usuario");
 		adicionarFiltros(jpql, seletor);
 
-		TypedQuery<Tweet> query = em.createQuery(jpql.toString(), Tweet.class);
+		TypedQuery<Tweet> query = super.em.createQuery(jpql.toString(), Tweet.class);
 		adicionarParametros(query, seletor);
 
 		return query.getResultList();
@@ -54,7 +54,7 @@ public class TweetRepository extends AbstractCrudRepository {
 		StringBuilder jpql = new StringBuilder("SELECT COUNT(t) FROM Tweet t");
 		adicionarFiltros(jpql, seletor);
 
-		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		TypedQuery<Long> query = super.em.createQuery(jpql.toString(), Long.class);
 		adicionarParametros(query, seletor);
 
 		return query.getSingleResult();

@@ -5,7 +5,7 @@ import java.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 
 public class TweetSeletor {
-	
+
 	private Integer id;
 	private String conteudo;
 	private Calendar data;
@@ -15,31 +15,31 @@ public class TweetSeletor {
 	private int pagina;
 
 	public Integer getId() {
-		return id;
+		return this.id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
 	public String getConteudo() {
-		return conteudo;
+		return this.conteudo;
 	}
 	public void setConteudo(String conteudo) {
 		this.conteudo = conteudo;
 	}
 	public Calendar getData() {
-		return data;
+		return this.data;
 	}
 	public Integer getPagina() {
-		return pagina;
+		return this.pagina;
 	}
 	public Integer getLimite() {
-		return limite;
+		return this.limite;
 	}
 	public void setData(Calendar data) {
 		this.data = data;
 	}
 	public Integer getIdUsuario() {
-		return idUsuario;
+		return this.idUsuario;
 	}
 	public void setIdUsuario(Integer idUsuario) {
 		this.idUsuario = idUsuario;
@@ -51,11 +51,11 @@ public class TweetSeletor {
 		this.limite = limite;
 	}
 	public boolean possuiFiltro() {
-		return id != null || idUsuario != null ||
-				data != null || !StringUtils.isBlank(conteudo);
+		return this.id != null || this.idUsuario != null ||
+				this.data != null || !StringUtils.isBlank(this.conteudo);
 	}
 	public boolean possuiPaginacao() {
-		return limite > 0 && pagina > 0;
+		return this.limite > 0 && this.pagina > 0;
 	}
 
 }

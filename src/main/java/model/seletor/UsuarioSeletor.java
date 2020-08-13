@@ -1,37 +1,37 @@
 package model.seletor;
 
 public class UsuarioSeletor {
-	
+
 	private Integer id;
 	private String nome;
-	
+
 	private int limite;
 	private int pagina;
-	
+
 	public boolean possuiFiltro() {
-		return this.id != null || 
+		return this.id != null ||
 				(this.nome != null && !this.nome.trim().isEmpty() );
 	}
-	
+
 	public boolean possuiPaginacao() {
 		return this.pagina > 0 && this.limite > 0;
 	}
-	
+
 	public Integer getId() {
-		return id;
+		return this.id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
 	public String getNome() {
-		return nome;
+		return this.nome;
 	}
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
 
 	public int getLimite() {
-		return limite;
+		return this.limite;
 	}
 
 	public void setLimite(int limite) {
@@ -39,11 +39,11 @@ public class UsuarioSeletor {
 	}
 
 	public int getPagina() {
-		return pagina;
+		return this.pagina;
 	}
 
 	public void setPagina(int pagina) {
 		this.pagina = pagina;
 	}
-	
+
 }

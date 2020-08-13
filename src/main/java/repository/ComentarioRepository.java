@@ -17,23 +17,23 @@ public class ComentarioRepository extends AbstractCrudRepository {
 
 	public void inserir(Comentario comentario) {
 		comentario.setData(Calendar.getInstance());
-		em.persist(comentario);
+		super.em.persist(comentario);
 	}
 
 	public void atualizar(Comentario comentario) {
 		comentario.setData(Calendar.getInstance());
-		em.merge(comentario);
+		super.em.merge(comentario);
 	}
 
 	public void remover(int id) {
 		Comentario comentario = consultar(id);
 		if (comentario != null) {
-			em.remove(comentario);
+			super.em.remove(comentario);
 		}
 	}
 
 	public Comentario consultar(int id) {
-		return em.find(Comentario.class, id);
+		return super.em.find(Comentario.class, id);
 	}
 
 	public List<Comentario> listarTodos() {
@@ -44,7 +44,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		StringBuilder jpql = new StringBuilder("SELECT c FROM Comentario c INNER JOIN FETCH c.usuario INNER JOIN FETCH c.tweet t INNER JOIN FETCH t.usuario");
 		adicionarFiltros(jpql, seletor);
 
-		TypedQuery<Comentario> query = em.createQuery(jpql.toString(), Comentario.class);
+		TypedQuery<Comentario> query = super.em.createQuery(jpql.toString(), Comentario.class);
 		adicionarParametros(query, seletor);
 
 		return query.getResultList();
@@ -54,7 +54,7 @@ public class ComentarioRepository extends AbstractCrudRepository {
 		StringBuilder jpql = new StringBuilder("SELECT COUNT(c) FROM Comentario c");
 		adicionarFiltros(jpql, seletor);
 
-		TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+		TypedQuery<Long> query = super.em.createQuery(jpql.toString(), Long.class);
 		adicionarParametros(query, seletor);
 
 		return query.getSingleResult();

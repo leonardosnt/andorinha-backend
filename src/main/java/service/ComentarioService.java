@@ -26,14 +26,14 @@ public class ComentarioService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Comentario> listarTodos() {
-		return comentarioRepository.listarTodos();
+		return this.comentarioRepository.listarTodos();
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Comentario inserir(Comentario comentario) {
-		comentarioRepository.inserir(comentario);
+		this.comentarioRepository.inserir(comentario);
 		return comentario;
 	}
 
@@ -41,21 +41,21 @@ public class ComentarioService {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Comentario consultar(@PathParam("id") Integer id) {
-		return comentarioRepository.consultar(id);
+		return this.comentarioRepository.consultar(id);
 	}
 
 	@DELETE
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public void remover(@PathParam("id") Integer id) {
-		comentarioRepository.remover(id);
+		this.comentarioRepository.remover(id);
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public void atualizar(Comentario comentario) {
-		comentarioRepository.atualizar(comentario);
+		this.comentarioRepository.atualizar(comentario);
 	}
 
 	@POST
@@ -63,7 +63,7 @@ public class ComentarioService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Comentario> pesquisar(ComentarioSeletor seletor) {
-		return comentarioRepository.pesquisar(seletor);
+		return this.comentarioRepository.pesquisar(seletor);
 	}
 
 }

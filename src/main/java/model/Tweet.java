@@ -36,25 +36,25 @@ public class Tweet {
 	private Usuario usuario;
 
 	public int getId() {
-		return id;
+		return this.id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
 	public String getConteudo() {
-		return conteudo;
+		return this.conteudo;
 	}
 	public void setConteudo(String conteudo) {
 		this.conteudo = conteudo;
 	}
 	public Calendar getData() {
-		return data;
+		return this.data;
 	}
 	public void setData(Calendar data) {
 		this.data = data;
 	}
 	public Usuario getUsuario() {
-		return usuario;
+		return this.usuario;
 	}
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;

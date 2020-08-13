@@ -16,53 +16,53 @@ public class ComentarioSeletor {
 	private int pagina;
 
 	public Integer getId() {
-		return id;
+		return this.id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
 	public String getConteudo() {
-		return conteudo;
+		return this.conteudo;
 	}
 	public void setConteudo(String conteudo) {
 		this.conteudo = conteudo;
 	}
 	public Calendar getData() {
-		return data;
+		return this.data;
 	}
 	public void setData(Calendar data) {
 		this.data = data;
 	}
 	public Integer getIdTweet() {
-		return idTweet;
+		return this.idTweet;
 	}
 	public void setIdTweet(Integer idTweet) {
 		this.idTweet = idTweet;
 	}
 	public Integer getLimite() {
-		return limite;
+		return this.limite;
 	}
 	public void setLimite(Integer limite) {
 		this.limite = limite;
 	}
 	public Integer getPagina() {
-		return pagina;
+		return this.pagina;
 	}
 	public void setPagina(Integer pagina) {
 		this.pagina = pagina;
 	}
 	public Integer getIdUsuario() {
-		return idUsuario;
+		return this.idUsuario;
 	}
 	public void setIdUsuario(Integer idUsuario) {
 		this.idUsuario = idUsuario;
 	}
 	public boolean possuiFiltro() {
-		return id != null || idTweet != null || idUsuario != null ||
-				data != null || !StringUtils.isBlank(conteudo);
+		return this.id != null || this.idTweet != null || this.idUsuario != null ||
+				this.data != null || !StringUtils.isBlank(this.conteudo);
 	}
 	public boolean possuiPaginacao() {
-		return limite > 0 && pagina > 0;
+		return this.limite > 0 && this.pagina > 0;
 	}
 
 }

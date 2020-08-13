@@ -26,14 +26,14 @@ public class TweetService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Tweet> listarTodos() {
-		return tweetRepository.listarTodos();
+		return this.tweetRepository.listarTodos();
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Tweet inserir(Tweet tweet) {
-		tweetRepository.inserir(tweet);
+		this.tweetRepository.inserir(tweet);
 		return tweet;
 	}
 
@@ -41,21 +41,21 @@ public class TweetService {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Tweet consultar(@PathParam("id") Integer id) {
-		return tweetRepository.consultar(id);
+		return this.tweetRepository.consultar(id);
 	}
 
 	@DELETE
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public void remover(@PathParam("id") Integer id) {
-		tweetRepository.remover(id);
+		this.tweetRepository.remover(id);
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public void atualizar(Tweet tweet) {
-		tweetRepository.atualizar(tweet);
+		this.tweetRepository.atualizar(tweet);
 	}
 
 	@POST
@@ -63,7 +63,7 @@ public class TweetService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Tweet> pesquisar(TweetSeletor seletor) {
-		return tweetRepository.pesquisar(seletor);
+		return this.tweetRepository.pesquisar(seletor);
 	}
 
 }
