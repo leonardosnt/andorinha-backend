@@ -1,10 +1,14 @@
 package repository;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import repository.base.EntityQuery;
+import repository.base.TupleQuery;
 
 public abstract class AbstractCrudRepository<T> {
 
@@ -34,7 +38,23 @@ public abstract class AbstractCrudRepository<T> {
 		}
 	}
 
+	public List<T> listarTodos()  {
+		return this.em.createQuery("SELECT t FROM " + this.persistentClass.getName() + " t", this.persistentClass).getResultList();
+	}
+
 	public T consultar(int id) {
 		return this.em.find(this.persistentClass, id);
+	}
+
+	protected EntityQuery<T> createEntityQuery() {
+		return EntityQuery.create(this.em, this.persistentClass);
+	}
+
+	protected EntityQuery<T> createCountQuery() {
+		return EntityQuery.createCount(this.em, this.persistentClass);
+	}
+
+	protected TupleQuery<T> createTupleQuery() {
+		return TupleQuery.create(this.em, this.persistentClass);
 	}
 }

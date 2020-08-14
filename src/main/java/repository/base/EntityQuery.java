@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -404,6 +406,16 @@ public class EntityQuery<E> {
         }
 
         return jpaPath;
+    }
+
+    public EntityQuery<E> apply(Consumer<EntityQuery<E>> consumer) {
+        consumer.accept(this);
+        return this;
+    }
+
+    public <T> EntityQuery<E> apply(BiConsumer<EntityQuery<E>, T> consumer, T obj) {
+        consumer.accept(this, obj);
+        return this;
     }
 
 }
