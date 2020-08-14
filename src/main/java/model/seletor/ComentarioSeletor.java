@@ -54,7 +54,7 @@ public class ComentarioSeletor extends AbstractBaseSeletor {
 
 	public boolean possuiFiltro() {
 		return this.id != null || this.idTweet != null || this.idUsuario != null || this.data != null
-				|| !StringUtils.isBlank(this.conteudo);
+				|| StringUtils.isNotBlank(this.conteudo);
 	}
 
 }

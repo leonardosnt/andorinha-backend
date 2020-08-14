@@ -44,7 +44,7 @@ public class TweetSeletor extends AbstractBaseSeletor {
 	}
 
 	public boolean possuiFiltro() {
-		return this.id != null || this.idUsuario != null || this.data != null || !StringUtils.isBlank(this.conteudo);
+		return this.id != null || this.idUsuario != null || this.data != null || StringUtils.isNotBlank(this.conteudo);
 	}
 
 }

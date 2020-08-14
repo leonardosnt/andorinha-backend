@@ -8,7 +8,7 @@ public class UsuarioSeletor extends AbstractBaseSeletor {
 	private String nome;
 
 	public boolean possuiFiltro() {
-		return this.id != null || !StringUtils.isBlank(this.nome);
+		return this.id != null || StringUtils.isNotBlank(this.nome);
 	}
 
 	public Integer getId() {
