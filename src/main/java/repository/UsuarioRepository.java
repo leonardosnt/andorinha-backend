@@ -12,26 +12,7 @@ import model.Usuario;
 import model.seletor.UsuarioSeletor;
 
 @Stateless
-public class UsuarioRepository extends AbstractCrudRepository {
-
-	public void inserir(Usuario usuario) {
-		super.em.persist(usuario);
-	}
-
-	public void atualizar(Usuario usuario) {
-		super.em.merge(usuario);
-	}
-
-	public void remover(int id) {
-		Usuario usuario = consultar(id);
-		if (usuario != null) {
-			super.em.remove(usuario);
-		}
-	}
-
-	public Usuario consultar(int id) {
-		return super.em.find(Usuario.class, id);
-	}
+public class UsuarioRepository extends AbstractCrudRepository<Usuario> {
 
 	public List<Usuario> listarTodos() {
 		return pesquisar(new UsuarioSeletor());

@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -78,6 +80,12 @@ public class Comentario {
 
 	public void setTweet(Tweet tweet) {
 		this.tweet = tweet;
+	}
+
+	@PrePersist
+	@PreUpdate
+	private void preencheData() {
+		this.data = Calendar.getInstance();
 	}
 
 	@Override

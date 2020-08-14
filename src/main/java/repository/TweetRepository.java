@@ -1,6 +1,5 @@
 package repository;
 
-import java.util.Calendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -14,28 +13,7 @@ import model.dto.TweetDTO;
 import model.seletor.TweetSeletor;
 
 @Stateless
-public class TweetRepository extends AbstractCrudRepository {
-
-	public void inserir(Tweet tweet) {
-		tweet.setData(Calendar.getInstance());
-		super.em.persist(tweet);
-	}
-
-	public void atualizar(Tweet tweet) {
-		tweet.setData(Calendar.getInstance());
-		super.em.merge(tweet);
-	}
-
-	public void remover(int id) {
-		Tweet tweet = consultar(id);
-		if (tweet != null) {
-			super.em.remove(tweet);
-		}
-	}
-
-	public Tweet consultar(int id) {
-		return super.em.find(Tweet.class, id);
-	}
+public class TweetRepository extends AbstractCrudRepository<Tweet> {
 
 	public List<Tweet> listarTodos() {
 		return pesquisar(new TweetSeletor());

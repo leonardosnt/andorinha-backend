@@ -1,6 +1,5 @@
 package repository;
 
-import java.util.Calendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -14,28 +13,7 @@ import model.dto.ComentarioDTO;
 import model.seletor.ComentarioSeletor;
 
 @Stateless
-public class ComentarioRepository extends AbstractCrudRepository {
-
-	public void inserir(Comentario comentario) {
-		comentario.setData(Calendar.getInstance());
-		super.em.persist(comentario);
-	}
-
-	public void atualizar(Comentario comentario) {
-		comentario.setData(Calendar.getInstance());
-		super.em.merge(comentario);
-	}
-
-	public void remover(int id) {
-		Comentario comentario = consultar(id);
-		if (comentario != null) {
-			super.em.remove(comentario);
-		}
-	}
-
-	public Comentario consultar(int id) {
-		return super.em.find(Comentario.class, id);
-	}
+public class ComentarioRepository extends AbstractCrudRepository<Comentario> {
 
 	public List<Comentario> listarTodos() {
 		return pesquisar(new ComentarioSeletor());
