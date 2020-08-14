@@ -8,7 +8,7 @@ import javax.persistence.TemporalType;
 import model.Comentario;
 import model.dto.ComentarioDTO;
 import model.seletor.ComentarioSeletor;
-import repository.base.EntityQuery;
+import repository.base.BaseQuery;
 
 @Stateless
 public class ComentarioRepository extends AbstractCrudRepository<Comentario> {
@@ -32,18 +32,7 @@ public class ComentarioRepository extends AbstractCrudRepository<Comentario> {
 				.select("id", "tweet.id as idTweet", "usuario.id as idUsuario", "usuario.nome as nomeUsuario", "data", "conteudo")
 				.join("usuario")
 				.join("tweet")
-
-				// TODO: Não dá para usar o aplicaFiltro porque TupleQuery e EntityQuery são
-				// tipos diferentes. Seria bom ter uma interface que ambos compartilhassem...
-				.equal("id", seletor.getId())
-				.equal("tweet.id", seletor.getIdTweet())
-				.equal("usuario.id", seletor.getIdUsuario())
-				.like("conteudo", seletor.getConteudo())
-				.equal("data", seletor.getData(), TemporalType.DATE)
-				.setFirstResult(seletor.getOffset())
-				.setMaxResults(seletor.getLimite())
-				.addOrderBy("asc", seletor.possuiPaginacao() ? "id" : null) // Por padrão, ordena pelo id ao usar paginação.
-
+				.apply(this::aplicaFiltros, seletor)
 				.list(ComentarioDTO.class);
 	}
 
@@ -51,7 +40,7 @@ public class ComentarioRepository extends AbstractCrudRepository<Comentario> {
 		return super.createCountQuery().apply(this::aplicaFiltros, seletor).count();
 	}
 
-	private void aplicaFiltros(EntityQuery<Comentario> query, ComentarioSeletor seletor) {
+	private void aplicaFiltros(BaseQuery<Comentario> query, ComentarioSeletor seletor) {
 		query.equal("id", seletor.getId())
 			.equal("tweet.id", seletor.getIdTweet())
 			.equal("usuario.id", seletor.getIdUsuario())

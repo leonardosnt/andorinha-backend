@@ -6,7 +6,7 @@ import javax.ejb.Stateless;
 
 import model.Usuario;
 import model.seletor.UsuarioSeletor;
-import repository.base.EntityQuery;
+import repository.base.BaseQuery;
 
 @Stateless
 public class UsuarioRepository extends AbstractCrudRepository<Usuario> {
@@ -19,7 +19,7 @@ public class UsuarioRepository extends AbstractCrudRepository<Usuario> {
 		return super.createCountQuery().apply(this::aplicaFiltros, seletor).count();
 	}
 
-	private void aplicaFiltros(EntityQuery<Usuario> query, UsuarioSeletor seletor) {
+	private void aplicaFiltros(BaseQuery<Usuario> query, UsuarioSeletor seletor) {
 		query.equal("id", seletor.getId())
 			.like("nome", seletor.getNome())
 			.setFirstResult(seletor.getOffset())

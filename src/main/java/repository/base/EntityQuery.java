@@ -27,7 +27,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class EntityQuery<E> {
+public class EntityQuery<E> implements BaseQuery<E> {
 
     private final EntityManager entityManager;
     private final Class<E> entityClass;
@@ -68,6 +68,7 @@ public class EntityQuery<E> {
         return new EntityQuery<>(entityManager, entityClass, true);
     }
 
+    @Override
     public List<E> list() {
         TypedQuery<E> typedQuery = prepareSelectTypedQuery();
 
@@ -104,21 +105,25 @@ public class EntityQuery<E> {
         return entityManager.createQuery(criteriaQuery);
     }
 
+    @Override
     public EntityQuery<E> innerJoinFetch(String attribute) {
         root.fetch(attribute, JoinType.INNER);
         return this;
     }
 
+    @Override
     public EntityQuery<E> leftJoinFetch(String attribute) {
         root.fetch(attribute, JoinType.LEFT);
         return this;
     }
 
+    @Override
     public EntityQuery<E> leftJoin(String attribute) {
         root.join(attribute, JoinType.LEFT);
         return this;
     }
 
+    @Override
     public EntityQuery<E> addOrderBy(String type, String path) {
         if (type != null && path != null){
             if ("asc".equalsIgnoreCase(type)){
@@ -131,26 +136,31 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> addAscendingOrderBy(String path) {
         orders.add(criteriaBuilder.asc(toJpaPath(path)));
         return this;
     }
 
+    @Override
     public EntityQuery<E> addDescendingOrderBy(String path) {
         orders.add(criteriaBuilder.desc(toJpaPath(path)));
         return this;
     }
 
+    @Override
     public EntityQuery<E> setFirstResult(Integer firstResult) {
         this.firstResult = firstResult;
         return this;
     }
 
+    @Override
     public EntityQuery<E> setMaxResults(Integer maxResults) {
         this.maxResults = maxResults;
         return this;
     }
 
+    @Override
     public EntityQuery<E> objectEqualsTo(String path, Object value) {
         if (value != null) {
             addEqualPredicate(path, value);
@@ -158,6 +168,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> equal(String path, Object value) {
         if (value != null) {
             addEqualPredicate(path, value);
@@ -165,6 +176,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> equal(String path, Calendar value, TemporalType temporalType) {
         if (value != null) {
             addEqualPredicate(path, value.getTime(), temporalType);
@@ -172,6 +184,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> equal(String path, java.util.Date value, TemporalType temporalType) {
         if (value != null) {
             addEqualPredicate(path, value, temporalType);
@@ -179,6 +192,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> notEqual(String path, Object value) {
         if (value != null) {
             addNotEqualPredicate(path, value);
@@ -187,6 +201,7 @@ public class EntityQuery<E> {
     }
 
 
+    @Override
     public EntityQuery<E> isEmpty(String path, Boolean executeFilter) {
         if (executeFilter != null && executeFilter.booleanValue() ) {
             addEmptyPredicate(path);
@@ -194,6 +209,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> isNotEmpty(String path, Boolean executeFilter) {
         if (executeFilter != null && executeFilter.booleanValue() ) {
             addNotEmptyPredicate(path);
@@ -201,6 +217,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> isMemberOf(String path, Object value) {
         if (value != null ) {
             addIsMemberOfPredicate(path, value);
@@ -208,11 +225,13 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> isNull(String path) {
         addIsNullPredicate(path);
         return this;
     }
 
+    @Override
     public EntityQuery<E> isNull(String path, Boolean apply) {
         if (apply != null && apply) {
             addIsNullPredicate(path);
@@ -220,6 +239,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> isNotNull(String path, Boolean apply) {
         if (apply != null && apply) {
             addIsNotNullPredicate(path);
@@ -227,6 +247,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public Optional<Predicate> objectEqualsToPredicate(String path, Object value) {
         if (value != null) {
             return Optional.of(equalPredicate(path, value));
@@ -234,6 +255,7 @@ public class EntityQuery<E> {
         return Optional.empty();
     }
 
+    @Override
     public EntityQuery<E> like(String path, String value) {
         if (StringUtils.isNotBlank(value)) {
             predicates.add(criteriaBuilder.like(toJpaPath(path), '%' + value + '%'));
@@ -241,6 +263,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> likeIgnoreCase(String path, String value) {
         if (StringUtils.isNotBlank(value)) {
             predicates.add(criteriaBuilder.like(criteriaBuilder.upper( toJpaPath(path) ), '%' + value.toUpperCase() + '%'));
@@ -248,6 +271,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> addInDisjunction(Optional<Predicate>... optionalPredicates) {
         List<Predicate> predicateList = Arrays.stream(optionalPredicates).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
         if (predicateList.size() > 1) {
@@ -258,6 +282,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> stringEqualsTo(String path, String value) {
         if (StringUtils.isNotBlank(value)) {
             addEqualPredicate(path, value);
@@ -265,6 +290,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> lessThanOrEqualsTo(String path, java.util.Date data, Boolean apply) {
         if (Objects.nonNull(data) && Objects.nonNull(apply) && apply) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(toJpaPath(path), data));
@@ -272,6 +298,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> greaterThanOrEqualsTo(String path, java.util.Date data, Boolean apply) {
         if (Objects.nonNull(data) && Objects.nonNull(apply) && apply) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(toJpaPath(path), data));
@@ -279,6 +306,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> greaterThanOrEqualsTo(String path, Comparable comparable) {
         if (Objects.nonNull(comparable)) {
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(toJpaPath(path), comparable));
@@ -286,6 +314,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> lessThanOrEqualsTo(String path, Comparable comparable) {
         if (Objects.nonNull(comparable)) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(toJpaPath(path), comparable));
@@ -293,6 +322,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> between(String path, Date firstDate, Date secondDate) {
         if (Objects.nonNull(firstDate) && Objects.nonNull(secondDate)) {
             predicates.add(criteriaBuilder.between(toJpaPath(path), firstDate, secondDate));
@@ -300,6 +330,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> between(String path, ZonedDateTime firstDate, ZonedDateTime secondDate) {
         if (Objects.nonNull(firstDate) && Objects.nonNull(secondDate)) {
             predicates.add(criteriaBuilder.between(toJpaPath(path), firstDate, secondDate));
@@ -307,6 +338,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> between(String path, java.util.Date firstDate, java.util.Date secondDate) {
         if (Objects.nonNull(firstDate) && Objects.nonNull(secondDate)) {
             predicates.add(criteriaBuilder.between(toJpaPath(path), new Date( firstDate.getTime() ), new Date( secondDate.getTime() )));
@@ -314,6 +346,7 @@ public class EntityQuery<E> {
         return this;
     }
 
+    @Override
     public EntityQuery<E> in(String path, Collection collection) {
         if (collection != null && !collection.isEmpty()) {
             predicates.add(criteriaBuilder.in(toJpaPath(path)).value(collection));
@@ -408,12 +441,14 @@ public class EntityQuery<E> {
         return jpaPath;
     }
 
-    public EntityQuery<E> apply(Consumer<EntityQuery<E>> consumer) {
+    @Override
+    public EntityQuery<E> apply(Consumer<BaseQuery<E>> consumer) {
         consumer.accept(this);
         return this;
     }
 
-    public <T> EntityQuery<E> apply(BiConsumer<EntityQuery<E>, T> consumer, T obj) {
+    @Override
+    public <T> EntityQuery<E> apply(BiConsumer<BaseQuery<E>, T> consumer, T obj) {
         consumer.accept(this, obj);
         return this;
     }

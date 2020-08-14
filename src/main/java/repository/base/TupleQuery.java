@@ -9,9 +9,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class TupleQuery<E> {
+public class TupleQuery<E> implements BaseQuery<E> {
 
     private final EntityManager entityManager;
     private final Class<E> entityClass;
@@ -53,6 +55,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public List<Tuple> list() {
         TypedQuery<Tuple> typedQuery = prepareSelectTypedQuery();
 
@@ -113,6 +116,7 @@ public class TupleQuery<E> {
         return entityManager.createQuery(criteriaQuery);
     }
 
+    @Override
     public TupleQuery<E> innerJoinFetch(String attribute) {
         root.fetch(attribute, JoinType.INNER);
         return this;
@@ -123,6 +127,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> leftJoin(String attribute) {
         root.join(attribute, JoinType.LEFT);
         return this;
@@ -155,6 +160,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> leftJoinFetch(String attribute) {
         root.fetch(attribute, JoinType.LEFT);
         return this;
@@ -164,6 +170,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> addOrderBy(String type, String path) {
         if (type != null && path != null){
             if ("asc".equalsIgnoreCase(type)){
@@ -176,6 +183,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> addAscendingOrderBy(String path) {
         if (path != null) {
             orders.add(criteriaBuilder.asc(toJpaPath(path)));
@@ -183,6 +191,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> addDescendingOrderBy(String path) {
         if (path != null) {
             orders.add(criteriaBuilder.desc(toJpaPath(path)));
@@ -190,16 +199,19 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> setFirstResult(Integer firstResult) {
         this.firstResult = firstResult;
         return this;
     }
 
+    @Override
     public TupleQuery<E> setMaxResults(Integer maxResults) {
         this.maxResults = maxResults;
         return this;
     }
 
+    @Override
     public TupleQuery<E> objectEqualsTo(String path, Object value) {
         if (value != null) {
             addEqualPredicate(path, value);
@@ -207,6 +219,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> equal(String path, Object value) {
         if (value != null) {
             addEqualPredicate(path, value);
@@ -214,6 +227,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> equal(String path, Calendar value, TemporalType temporalType) {
         if (value != null) {
             addEqualPredicate(path, value.getTime(), temporalType);
@@ -221,6 +235,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> equal(String path, java.util.Date value, TemporalType temporalType) {
         if (value != null) {
             addEqualPredicate(path, value, temporalType);
@@ -229,6 +244,7 @@ public class TupleQuery<E> {
     }
 
 
+    @Override
     public TupleQuery<E> notEqual(String path, Object value) {
         if (value != null) {
             addNotEqualPredicate(path, value);
@@ -236,6 +252,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> isEmpty(String path, Boolean executeFilter) {
         if (executeFilter != null && executeFilter.booleanValue() ) {
             addEmptyPredicate(path);
@@ -243,11 +260,13 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> isNull(String path) {
         addIsNullPredicate(path);
         return this;
     }
 
+    @Override
     public TupleQuery<E> isNull(String path, Boolean apply) {
         if (apply != null && apply) {
             addIsNullPredicate(path);
@@ -255,6 +274,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> isNotNull(String path, Boolean apply) {
         if (apply != null && apply) {
             addIsNotNullPredicate(path);
@@ -262,6 +282,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> isMemberOf(String path, Object value) {
         if (value != null ) {
             addIsMemberOfPredicate(path, value);
@@ -269,6 +290,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> isNotEmpty(String path, Boolean executeFilter) {
         if (executeFilter != null && executeFilter.booleanValue() ) {
             addNotEmptyPredicate(path);
@@ -276,6 +298,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public Optional<Predicate> objectEqualsToPredicate(String path, Object value) {
         if (value != null) {
             return Optional.of(equalPredicate(path, value));
@@ -283,6 +306,7 @@ public class TupleQuery<E> {
         return Optional.empty();
     }
 
+    @Override
     public TupleQuery<E> like(String path, String value) {
         if (StringUtils.isNotBlank(value)) {
             predicates.add(criteriaBuilder.like(toJpaPath(path), '%' + value + '%'));
@@ -290,6 +314,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> likeIgnoreCase(String path, String value) {
         if (StringUtils.isNotBlank(value)) {
             predicates.add(criteriaBuilder.like(criteriaBuilder.upper( toJpaPath(path) ), '%' + value.toUpperCase() + '%'));
@@ -297,6 +322,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> addInDisjunction(Optional<Predicate>... optionalPredicates) {
         List<Predicate> predicateList = Arrays.stream(optionalPredicates).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
         if (predicateList.size() > 1) {
@@ -307,6 +333,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> stringEqualsTo(String path, String value) {
         if (StringUtils.isNotBlank(value)) {
             addEqualPredicate(path, value);
@@ -314,6 +341,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> lessThanOrEqualsTo(String path, java.util.Date data, Boolean apply) {
         if (Objects.nonNull(data) && Objects.nonNull(apply) && apply) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(toJpaPath(path), data));
@@ -321,6 +349,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> greaterThanOrEqualsTo(String path, java.util.Date data, Boolean apply) {
         if (Objects.nonNull(data) && Objects.nonNull(apply) && apply) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(toJpaPath(path), data));
@@ -328,6 +357,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> greaterThanOrEqualsTo(String path, Comparable comparable) {
         if (Objects.nonNull(comparable)) {
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(toJpaPath(path), comparable));
@@ -335,6 +365,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> lessThanOrEqualsTo(String path, Comparable comparable) {
         if (Objects.nonNull(comparable)) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(toJpaPath(path), comparable));
@@ -342,6 +373,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> between(String path, Date firstDate, Date secondDate) {
         if (Objects.nonNull(firstDate) && Objects.nonNull(secondDate)) {
             predicates.add(criteriaBuilder.between(toJpaPath(path), firstDate, secondDate));
@@ -349,6 +381,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> between(String path, ZonedDateTime firstDate, ZonedDateTime secondDate) {
         if (Objects.nonNull(firstDate) && Objects.nonNull(secondDate)) {
             predicates.add(criteriaBuilder.between(toJpaPath(path), firstDate, secondDate));
@@ -356,6 +389,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> between(String path, java.util.Date firstDate, java.util.Date secondDate) {
         if (Objects.nonNull(firstDate) && Objects.nonNull(secondDate)) {
             predicates.add(criteriaBuilder.between(toJpaPath(path), new Date( firstDate.getTime() ), new Date( secondDate.getTime() )));
@@ -363,6 +397,7 @@ public class TupleQuery<E> {
         return this;
     }
 
+    @Override
     public TupleQuery<E> in(String path, Collection collection) {
         if (collection != null && !collection.isEmpty()) {
             predicates.add(criteriaBuilder.in(toJpaPath(path)).value(collection));
@@ -480,5 +515,17 @@ public class TupleQuery<E> {
         };
 
         return bean;
+    }
+
+    @Override
+    public TupleQuery<E> apply(Consumer<BaseQuery<E>> consumer) {
+        consumer.accept(this);
+        return this;
+    }
+
+    @Override
+    public <T> TupleQuery<E> apply(BiConsumer<BaseQuery<E>, T> consumer, T obj) {
+        consumer.accept(this, obj);
+        return this;
     }
 }

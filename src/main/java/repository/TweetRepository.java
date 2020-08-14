@@ -8,7 +8,7 @@ import javax.persistence.TemporalType;
 import model.Tweet;
 import model.dto.TweetDTO;
 import model.seletor.TweetSeletor;
-import repository.base.EntityQuery;
+import repository.base.BaseQuery;
 
 @Stateless
 public class TweetRepository extends AbstractCrudRepository<Tweet> {
@@ -29,17 +29,7 @@ public class TweetRepository extends AbstractCrudRepository<Tweet> {
 		return super.createTupleQuery()
 				.select("id", "usuario.id as idUsuario", "usuario.nome as nomeUsuario", "data", "conteudo")
 				.join("usuario")
-
-				// TODO: Não dá para usar o aplicaFiltro porque TupleQuery e EntityQuery são
-				// tipos diferentes. Seria bom ter uma interface que ambos compartilhassem...
-				.equal("id", seletor.getId())
-				.equal("usuario.id", seletor.getIdUsuario())
-				.like("conteudo", seletor.getConteudo())
-				.equal("data", seletor.getData(), TemporalType.DATE)
-				.setFirstResult(seletor.getOffset())
-				.setMaxResults(seletor.getLimite())
-				.addOrderBy("asc", seletor.possuiPaginacao() ? "id" : null) // Por padrão, ordena pelo id ao usar paginação.
-
+				.apply(this::aplicaFiltros, seletor)
 				.list(TweetDTO.class);
 	}
 
@@ -47,7 +37,7 @@ public class TweetRepository extends AbstractCrudRepository<Tweet> {
 		return super.createCountQuery().apply(this::aplicaFiltros, seletor).count();
 	}
 
-	private void aplicaFiltros(EntityQuery<Tweet> query, TweetSeletor seletor) {
+	private void aplicaFiltros(BaseQuery<Tweet> query, TweetSeletor seletor) {
 		query.equal("id", seletor.getId())
 			.equal("usuario.id", seletor.getIdUsuario())
 			.like("conteudo", seletor.getConteudo())
