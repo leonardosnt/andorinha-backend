@@ -214,6 +214,13 @@ public class TupleQuery<E> {
         return this;
     }
 
+    public TupleQuery<E> equal(String path, Calendar value, TemporalType temporalType) {
+        if (value != null) {
+            addEqualPredicate(path, value.getTime(), temporalType);
+        }
+        return this;
+    }
+
     public TupleQuery<E> equal(String path, java.util.Date value, TemporalType temporalType) {
         if (value != null) {
             addEqualPredicate(path, value, temporalType);

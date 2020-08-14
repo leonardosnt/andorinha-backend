@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -158,6 +159,13 @@ public class EntityQuery<E> {
     public EntityQuery<E> equal(String path, Object value) {
         if (value != null) {
             addEqualPredicate(path, value);
+        }
+        return this;
+    }
+
+    public EntityQuery<E> equal(String path, Calendar value, TemporalType temporalType) {
+        if (value != null) {
+            addEqualPredicate(path, value.getTime(), temporalType);
         }
         return this;
     }
