@@ -10,6 +10,7 @@
 		<properties>
 			<!-- Properties for Hibernate -->
 			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.id.new_generator_mappings" value="false"></property>
 			<property name="tomee.jpa.cdi" value="false"/>
 			<property name="hibernate.ejb.use_class_enhancer" value="true" />
