@@ -21,8 +21,7 @@ public class ComentarioRepository extends AbstractCrudRepository<Comentario> {
 	public List<Comentario> pesquisar(ComentarioSeletor seletor) {
 		return super.createEntityQuery()
 				.innerJoinFetch("usuario")
-				.innerJoinFetch("tweet")
-				//.innerJoinFetch("tweet.usuario") // TODO: isso não funciona.
+				.innerJoinFetch("tweet.usuario")
 				.apply(this::aplicaFiltros, seletor)
 				.list();
 	}

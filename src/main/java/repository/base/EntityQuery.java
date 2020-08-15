@@ -19,6 +19,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.FetchParent;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
@@ -107,13 +108,13 @@ public class EntityQuery<E> implements BaseQuery<E> {
 
     @Override
     public EntityQuery<E> innerJoinFetch(String attribute) {
-        root.fetch(attribute, JoinType.INNER);
+        this.fetch(attribute, JoinType.INNER);
         return this;
     }
 
     @Override
     public EntityQuery<E> leftJoinFetch(String attribute) {
-        root.fetch(attribute, JoinType.LEFT);
+        this.fetch(attribute, JoinType.LEFT);
         return this;
     }
 
@@ -352,6 +353,19 @@ public class EntityQuery<E> implements BaseQuery<E> {
             predicates.add(criteriaBuilder.in(toJpaPath(path)).value(collection));
         }
         return this;
+    }
+
+    private void fetch(String attribute, JoinType type) {
+        if (attribute.indexOf('.') != -1) {
+            String[] paths = StringUtils.split(attribute, '.');
+
+            FetchParent<?,?> fetch = root;
+            for (String path : paths) {
+                fetch = fetch.fetch(path, type);
+            }
+        } else {
+            root.fetch(attribute, type);
+        }
     }
 
     private void addEqualPredicate(String path, Object value) {
