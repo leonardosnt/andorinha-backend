@@ -281,4 +281,31 @@ public class TestTweetRepository {
 		assertThat(this.tweetRepository.pesquisar(seletor))
 			.isNotNull().hasSize(1).extracting("id").containsExactlyInAnyOrder(10);
 	}
+
+	@Test
+	public void testa_ordenacao() {
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
+
+		TweetSeletor seletor = new TweetSeletor();
+		seletor.setLimite(5);
+		seletor.setPagina(1);
+		seletor.setOrderField("data");
+		seletor.setOrderType("asc");
+
+		assertThat(seletor.possuiPaginacao()).isTrue();
+		assertThat(this.tweetRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(5)
+			.extracting("id")
+			.containsExactly(3, 5, 4, 8, 1);
+
+		seletor.setOrderType("desc");
+		seletor.setLimite(3);
+
+		assertThat(this.tweetRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(3)
+			.extracting("id")
+			.containsExactly(10, 6, 9);
+	}
 }

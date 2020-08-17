@@ -23,14 +23,14 @@
 	<public.tweet id="10" id_usuario="1" data_postagem="2020-12-23 12:55:15" conteudo="Minha postagem de teste 10" />
 	
 	<public.comentario  id="1" id_usuario="4" id_tweet="1" data_postagem="2020-06-01 15:45:20" conteudo="Comentário 1" />
-	<public.comentario  id="2" id_usuario="4" id_tweet="1" data_postagem="2020-06-02 15:45:20" conteudo="Comentário 2" />
+	<public.comentario  id="2" id_usuario="4" id_tweet="1" data_postagem="2020-01-02 15:45:20" conteudo="Comentário 2" />
 	<public.comentario  id="3" id_usuario="3" id_tweet="1" data_postagem="2020-06-03 15:45:20" conteudo="Comentário 3" />
-	<public.comentario  id="4" id_usuario="2" id_tweet="1" data_postagem="2020-06-04 15:45:20" conteudo="Comentário 4" />
+	<public.comentario  id="4" id_usuario="2" id_tweet="1" data_postagem="2020-05-14 15:45:20" conteudo="Comentário 4" />
 	<public.comentario  id="5" id_usuario="1" id_tweet="2" data_postagem="2020-06-05 15:45:20" conteudo="Comentário 5" />
 	<public.comentario  id="6" id_usuario="4" id_tweet="2" data_postagem="2020-06-06 15:45:20" conteudo="Comentário 6" />
-	<public.comentario  id="7" id_usuario="4" id_tweet="3" data_postagem="2020-06-07 15:45:20" conteudo="Comentário 7" />
+	<public.comentario  id="7" id_usuario="4" id_tweet="3" data_postagem="2020-02-27 15:45:20" conteudo="Comentário 7" />
 	<public.comentario  id="8" id_usuario="3" id_tweet="3" data_postagem="2020-06-08 15:45:20" conteudo="Comentário 8" />
-	<public.comentario  id="9" id_usuario="2" id_tweet="3" data_postagem="2020-06-09 15:45:20" conteudo="Comentário 9" />
+	<public.comentario  id="9" id_usuario="2" id_tweet="3" data_postagem="2020-03-19 15:45:20" conteudo="Comentário 9" />
 	<public.comentario id="10" id_usuario="1" id_tweet="3" data_postagem="2020-06-10 15:45:20" conteudo="Comentário 10" />
 
 </dataset>

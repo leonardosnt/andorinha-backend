@@ -206,4 +206,27 @@ public class TestUsuarioRepository {
 			.containsExactly(7);
 	}
 
+	@Test
+	public void testa_ordenacao() {
+		UsuarioSeletor seletor = new UsuarioSeletor();
+		seletor.setOrderField("nome");
+		seletor.setOrderType("asc");
+		seletor.setLimite(5);
+		seletor.setPagina(1);
+
+		assertThat(seletor.possuiPaginacao()).isTrue();
+		assertThat(this.usuarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.extracting("nome")
+			.containsExactly("Ana", "João", "José", "Joselito", "Maria");
+
+		seletor.setOrderType("desc");
+		seletor.setLimite(3);
+
+		assertThat(this.usuarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(3)
+			.extracting("nome")
+			.containsExactly("Usuário 5", "Usuário 4", "Usuário 3");
+	}
 }

@@ -277,4 +277,32 @@ public class TestComentarioRepository {
 			.isNotNull().hasSize(2).extracting("id").containsExactly(9, 10);
 	}
 
+	@Test
+	public void testa_ordenacao() {
+		DatabaseHelper.getInstance("andorinhaDS").execute("dataset/paginacao.xml", DatabaseOperation.CLEAN_INSERT);
+
+		ComentarioSeletor seletor = new ComentarioSeletor();
+		seletor.setLimite(5);
+		seletor.setPagina(1);
+		seletor.setOrderField("data");
+		seletor.setOrderType("asc");
+
+		assertThat(seletor.possuiPaginacao()).isTrue();
+		assertThat(this.comentarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(5)
+			.extracting("id")
+			.containsExactly(2, 7, 9, 4, 1);
+
+		seletor.setOrderType("desc");
+		seletor.setLimite(3);
+		seletor.setIdUsuario(4);
+
+		assertThat(this.comentarioRepository.pesquisar(seletor))
+			.isNotNull()
+			.hasSize(3)
+			.extracting("id")
+			.containsExactly(6, 1, 7);
+	}
+
 }
