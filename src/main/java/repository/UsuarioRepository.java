@@ -23,7 +23,8 @@ public class UsuarioRepository extends AbstractCrudRepository<Usuario> {
 		query.equal("id", seletor.getId())
 			.like("nome", seletor.getNome())
 			.setFirstResult(seletor.getOffset())
-			.setMaxResults(seletor.getLimite());
+			.setMaxResults(seletor.getLimite())
+			.addOrderBy(seletor.getOrderType(), seletor.getOrderField());
 	}
 
 }

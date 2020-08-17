@@ -47,6 +47,6 @@ public class ComentarioRepository extends AbstractCrudRepository<Comentario> {
 			.equal("data", seletor.getData(), TemporalType.DATE)
 			.setFirstResult(seletor.getOffset())
 			.setMaxResults(seletor.getLimite())
-			.addOrderBy("asc", seletor.possuiPaginacao() ? "id" : null); // Por padrão, ordena pelo id ao usar paginação.
+			.addOrderBy(seletor.getOrderType(), seletor.getOrderField());
 	}
 }
