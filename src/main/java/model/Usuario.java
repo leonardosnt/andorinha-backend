@@ -10,9 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.security.Principal;
+
+
 @Entity
 @Table(name = "usuario")
-public class Usuario {
+public class Usuario implements Principal {
 
 	@Id
 	@SequenceGenerator(name = "seq_usuario", sequenceName = "seq_usuario", initialValue = 1, allocationSize = 1)
@@ -22,6 +27,12 @@ public class Usuario {
 
 	@Column(name = "nome")
 	private String nome;
+
+	@Column(name = "login")
+	private String login;
+
+	@Column(name = "senha")
+	private String senha;
 
 	public int getId() {
 		return this.id;
@@ -39,6 +50,23 @@ public class Usuario {
 		this.nome = nome;
 	}
 
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	@JsonIgnore
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, nome);
@@ -54,6 +82,12 @@ public class Usuario {
 			return false;
 		Usuario other = (Usuario) obj;
 		return id == other.id && Objects.equals(nome, other.nome);
+	}
+
+	@JsonIgnore
+	@Override
+	public String getName() {
+		return this.login;
 	}
 
 }

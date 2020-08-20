@@ -5,6 +5,8 @@ BEGIN TRANSACTION;
 CREATE TABLE usuario (
     id INTEGER NOT NULL,
     nome VARCHAR NOT NULL,
+    login VARCHAR NOT NULL,
+    senha VARCHAR NOT NULL
 
     CONSTRAINT pk_usuario PRIMARY KEY (id)
 );

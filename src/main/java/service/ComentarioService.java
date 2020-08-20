@@ -11,9 +11,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import model.Comentario;
+import model.Usuario;
 import model.dto.ComentarioDTO;
 import model.seletor.ComentarioSeletor;
 import repository.ComentarioRepository;
@@ -23,6 +26,9 @@ public class ComentarioService {
 
 	@EJB
 	private ComentarioRepository comentarioRepository;
+
+	@Context
+	private SecurityContext context;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -34,6 +40,7 @@ public class ComentarioService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Comentario inserir(Comentario comentario) {
+		comentario.setUsuario((Usuario) context.getUserPrincipal());
 		this.comentarioRepository.inserir(comentario);
 		return comentario;
 	}
@@ -56,6 +63,7 @@ public class ComentarioService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public void atualizar(Comentario comentario) {
+		comentario.setUsuario((Usuario) context.getUserPrincipal());
 		this.comentarioRepository.atualizar(comentario);
 	}
 
